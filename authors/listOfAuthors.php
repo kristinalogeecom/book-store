@@ -1,5 +1,5 @@
 <?php
-// Lista autora
+
 $authors = [
     ['id' => 1, 'name' => 'Pera Peric'],
     ['id' => 2, 'name' => 'Mika Mikic'],
@@ -7,14 +7,6 @@ $authors = [
     ['id' => 4, 'name' => 'Nikola Nikolic'],
 ];
 
-// Lista knjiga (sa ID-jem autora)
-$books = [
-    ['title' => 'PHP za početnike', 'year' => 2006, 'author' => ['id' => 1, 'name' => 'Pera Peric']],
-    ['title' => 'Napredni PHP', 'year' => 2011, 'author' => ['id' => 2, 'name' => 'Mika Mikic']],
-    ['title' => 'PHP i MySQL', 'year' => 2012, 'author' => ['id' => 1, 'name' => 'Pera Peric']],
-];
-
-// Računamo broj knjiga po autoru
 $bookCounts = [];
 foreach ($books as $book) {
     $authorId = $book['author']['id'];
@@ -24,7 +16,7 @@ foreach ($books as $book) {
     $bookCounts[$authorId]++;
 }
 
-// Dodajemo broj knjiga svakom autoru
+
 foreach ($authors as &$author) {
     $authorId = $author['id'];
     if (isset($bookCounts[$authorId])) {
@@ -42,10 +34,16 @@ unset($author);
     <title>Author List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
         table {
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             width: 80%;
-            margin: 20px auto;
+            margin: 40px auto;
         }
 
         a {
@@ -58,14 +56,42 @@ unset($author);
         }
 
         th {
-            border-bottom: 2px solid #ccc; /* Dodaje liniju samo ispod zaglavlja */
-            padding: 10px;
             text-align: left;
+            padding: 10px 12px;
+            font-weight: normal;
+            color: #666;
+            border-bottom: 2px solid #dcdcdc;
         }
 
         td {
-            padding: 10px;
-            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid transparent;
+            vertical-align: middle;
+        }
+
+        th:nth-child(2),
+        th:nth-child(3),
+        td:nth-child(2),
+        td:nth-child(3) {
+            text-align: right;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 10%;
+            text-align: center;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 12%;
+            text-align: right;
+        }
+
+        .book-count {
+            display: inline-block;
+            background-color: #f0f1f5;
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 14px;
         }
 
         a.button {
@@ -75,40 +101,50 @@ unset($author);
         }
 
         .edit {
-            background-color: #4a90e2;
-            color: white;
+            color: #4a90e2;
         }
 
         .delete {
-            background-color: #e94e4e;
-            color: white;
+            color: #e94e4e;
+        }
+
+        .author-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #e6efff;
+            color: #4a90e2;
+            margin-right: 10px;
         }
 
         .add {
-            background-color: #4a90e2;
-            color: white;
+            display: block;
+            width: 80%;
+            margin: 20px auto 0 auto;
+            font-size: 30px;
+            color: #4a90e2;
+            background-color: white;
+            border-radius: 999px;
             text-decoration: none;
         }
 
-        h2 .add i {
-            font-size: 16px;
-            padding: 6px 10px;
-            background-color: #4a90e2;
-            color: white;
-            border-radius: 4px;
-            text-decoration: none;
+        .table-wrapper::after {
+            content: "";
+            display: block;
+            height: 2px;
+            background: #dcdcdc;
+            width: 80%;
+            margin: 20px auto;
         }
-
 
     </style>
 </head>
 <body>
 
-    <h2 style="width: 80%; margin: 20px auto 10px auto">
-        Author List
-        <a class="add" href="createAuthor.php"><i class="fa-solid fa-plus"></i></a>
-    </h2>
-
+<div class = "table-wrapper">
     <table>
         <tr>
             <th>Author</th>
@@ -118,21 +154,23 @@ unset($author);
         <?php foreach ($authors as $author): ?>
         <tr>
             <td>
+                <i class="fa-solid fa-user author-icon"></i>
                 <a href="../books/filteredBooks.php?author_id=<?= $author['id'] ?>"><?= htmlspecialchars($author['name']) ?></a>
             </td>
             <td>
-                <?= $author['books'] ?>
+                <span class="book-count"><?= $author['books'] ?></span>
             </td>
-            <td>
+            <td class="actions">
                 <a class="button edit" href="editAuthor.php?id=<?= $author['id'] ?>"><i class="fa-solid fa-pen-to-square"></i></a>
                 <a class="button delete" href="deleteAuthor.php?id=<?= $author['id'] ?>"><i class="fa-solid fa-trash"></i></a>
             </td>
         </tr>
         <?php endforeach; ?>
     </table>
+</div>
 
+<a class="add" href="createAuthor.php"><i class="fa-solid fa-plus"></i></a>
 
 </body>
-
 
 </html>
