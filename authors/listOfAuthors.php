@@ -1,11 +1,12 @@
 <?php
 
-$authors = [
-    ['id' => 1, 'name' => 'Pera Peric'],
-    ['id' => 2, 'name' => 'Mika Mikic'],
-    ['id' => 3, 'name' => 'Zika Zikic'],
-    ['id' => 4, 'name' => 'Nikola Nikolic'],
-];
+session_start();
+
+if(!isset($_SESSION['authors'])) {
+    $_SESSION['authors'] = [];
+}
+
+$authors = $_SESSION['authors'];
 
 $bookCounts = [];
 foreach ($books as $book) {
@@ -29,7 +30,7 @@ unset($author);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Author List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -155,7 +156,9 @@ unset($author);
         <tr>
             <td>
                 <i class="fa-solid fa-user author-icon"></i>
-                <a href="../books/filteredBooks.php?author_id=<?= $author['id'] ?>"><?= htmlspecialchars($author['name']) ?></a>
+                <a href="../books/filteredBooks.php?author_id=<?= $author['id'] ?>"><?= htmlspecialchars($author['first_name']) ?>
+                    <?= htmlspecialchars($author['last_name']) ?></a>
+
             </td>
             <td>
                 <span class="book-count"><?= $author['books'] ?></span>

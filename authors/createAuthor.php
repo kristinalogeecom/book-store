@@ -1,90 +1,143 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
+    $firstName = trim($_POST['first_name']);
+    $lastName = trim($_POST['last_name']);
+
+    if (strlen($firstName) > 100 || strlen($lastName) > 100) {
+        $error = "* First name and last name cannot be longer than 100 characters.";
+    } else {
+        $maxId = 0;
+        if (isset($_SESSION['authors'])) {
+            foreach ($_SESSION['authors'] as $a) {
+                if ($a['id'] > $maxId) {
+                    $maxId = $a['id'];
+                }
+            }
+        }
+
+        if (!empty($firstName) && !empty($lastName)) {
+
+            $newAuthor = [
+                'id' => $maxId + 1,
+                'first_name' => $firstName,
+                'last_name' => $lastName
+            ];
+
+            if (!isset($_SESSION['authors'])) {
+                $_SESSION['authors'] = [];
+            }
+
+            $_SESSION['authors'][] = $newAuthor;
+            header('Location: listOfAuthors.php');
+            exit;
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Create Author</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Author Create</title>
     <style>
         body {
             font-family: Arial, sans-serif;
         }
 
         .form-container {
-            width: 400px;
+            width: 280px;
             margin: 40px auto;
-            padding: 30px;
+            padding: 20px;
             border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            background-color: #fff;
         }
 
         h2 {
-            text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666666;
+            font-weight: normal;
         }
 
         label {
             display: block;
-            margin-top: 10px;
-            font-weight: bold;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666666;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 8px 10px;
-            margin-top: 5px;
+            padding: 6px;
+            border: 1px solid;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
         }
 
-        input[type="submit"] {
-            margin-top: 20px;
-            width: 100%;
-            background-color: #4a90e2;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
+        .required-msg {
+            color: red;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .error-msg {
+            color: red;
+            font-size: 12px;
+            margin-top: 4px;
+            margin-bottom: 10px;
+        }
+
+        .btn-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 8px 20px;
             font-size: 16px;
+            font-weight: bold;
+            background-color: #64b5f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
+            width: auto;
         }
 
-        input[type="submit"]:hover {
-            background-color: #3b7cc4;
-        }
-
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #4a90e2;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
+        button:hover {
+            background-color: #42a5f5;
         }
     </style>
 </head>
 <body>
 
 <div class="form-container">
-    <h2><i class="fa-solid fa-user" style="color: #4a90e2;"></i> Create New Author</h2>
+    <h2>Author Create</h2>
+    <hr style="border: 1px solid #BEDCFE;">
+    <form method="post" action="">
+        <label for="first_name">First name</label>
+        <input type="text" name="first_name" id="first_name"  value="<?= htmlspecialchars(isset($_POST['first_name']) ? $_POST['first_name'] : '') ?>">
+        <?php if ($_SERVER['REQUEST_METHOD'] === "POST" && empty($_POST['first_name'])): ?>
+            <div class="required-msg">* This field is required</div>
+        <?php endif; ?>
 
-    <form action="saveAuthor.php" method="POST" onsubmit="return validateForm()">
-        <label for="first_name">First Name:</label>
-        <input type="text" id="first_name" name="first_name" maxlength="100" required>
+        <label for="last_name">Last name</label>
+        <input type="text" name="last_name" id="last_name"  value="<?= htmlspecialchars(isset($_POST['last_name']) ? $_POST['last_name'] : '') ?>">
+        <?php if ($_SERVER['REQUEST_METHOD'] === "POST" && empty($_POST['last_name'])): ?>
+            <div class="required-msg">* This field is required</div>
+        <?php endif; ?>
 
-        <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="last_name" maxlength="100" required>
+        <?php if (isset($error)): ?>
+            <div class="error-msg"><?= $error ?></div>
+        <?php endif; ?>
 
-        <input type="submit" value="Create Author">
+        <div class="btn-wrapper">
+            <button type="submit">Save</button>
+        </div>
     </form>
-
-    <a class="back-link" href="listOfAuthors.php"><i class="fa-solid fa-arrow-left"></i> Back to Author List</a>
 </div>
 
-<script>
-    function validateForm() {
-        const firstName = document.getElementById('first_name').value.trim();
-        const lastName = document.getElementById
+</body>
+</html>

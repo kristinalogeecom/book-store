@@ -1,143 +1,128 @@
 <?php
-// Simulacija baze autora i knjiga
-$authors = [
-    1 => ['id' => 1, 'name' => 'Pera Peric'],
-    2 => ['id' => 2, 'name' => 'Mika Mikic'],
-    3 => ['id' => 3, 'name' => 'Zika Zikic'],
-    4 => ['id' => 4, 'name' => 'Nikola Nikolic'],
-];
+session_start();
 
-$books = [
-    ['id' => 1, 'title' => 'PHP za početnike', 'year' => 2006, 'author' => ['id' => 1, 'name' => 'Pera Peric']],
-    ['id' => 2, 'title' => 'Napredni PHP', 'year' => 2011, 'author' => ['id' => 2, 'name' => 'Mika Mikic']],
-    ['id' => 3, 'title' => 'PHP i MySQL', 'year' => 2012, 'author' => ['id' => 1, 'name' => 'Pera Peric']]
-];
-
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-if (!isset($authors[$id])) {
-    echo "Author not found.";
-    exit;
+if (!isset($_SESSION['authors'])) {
+    $_SESSION['authors'] = [];
 }
 
-$author = $authors[$id];
+$authors = $_SESSION['authors'];
 
-// Prebroj knjige autora
-$bookCount = 0;
-foreach ($books as $book) {
-    if ($book['author']['id'] === $id) {
-        $bookCount++;
+if (!isset($_GET['id'])) {
+    header("Location: listOfAuthors.php");
+    exit();
+}
+
+$authorId = $_GET['id'];
+$authorToDelete = null;
+
+foreach ($authors as $author) {
+    if ($author['id'] == $authorId) {
+        $authorToDelete = $author;
+        break;
+    }
+}
+
+if (!$authorToDelete) {
+    echo "Author not found.";
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['confirm'])) {
+
+        foreach ($_SESSION['authors'] as $index => $author) {
+            if ($author['id'] == $authorId) {
+                unset($_SESSION['authors'][$index]);
+                break;
+            }
+        }
+
+
+        header("Location: listOfAuthors.php");
+        exit();
+    } else {
+        header("Location: listOfAuthors.php");
+        exit();
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Delete Author</title>
+    <title>Delete Confirmation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
+            padding: 40px;
         }
 
-        .form-container {
-            width: 400px;
-            margin: 40px auto;
-            padding: 30px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #fdf6f6;
+        .dialog {
+            width: 47%;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 24px;
+        }
+
+        .icon {
+            color: #d93025;
+            font-size: 24px;
+            margin-right: 8px;
         }
 
         h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #e94e4e;
-        }
-
-        .warning-icon {
-            color: #e94e4e;
-            font-size: 40px;
-            display: block;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .message {
-            text-align: center;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-
-        .buttons {
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            color: black;
         }
 
-        .buttons form {
-            flex: 1;
+        p {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .actions {
+            margin-top: 24px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .actions button {
+            padding: 10px 16px;
             margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
         }
 
-        .buttons form:last-child {
-            margin-right: 0;
-        }
-
-        .delete-button {
+        .delete-btn {
             background-color: #e94e4e;
             color: white;
-            padding: 10px;
-            width: 100%;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
         }
 
-        .cancel-button {
-            background-color: #ccc;
-            color: black;
-            padding: 10px;
-            width: 100%;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .cancel-button:hover {
-            background-color: #bbb;
-        }
-
-        .delete-button:hover {
-            background-color: #d63d3d;
+        .cancel-btn {
+            background-color: #f1f1f1;
+            color: #333;
         }
     </style>
 </head>
 <body>
-
-<div class="form-container">
-    <div class="warning-icon">
-        <i class="fa-solid fa-triangle-exclamation"></i>
+<form method="post">
+    <div class="dialog">
+        <h2><span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>Delete Author</h2>
+        <p>
+            You are about to delete the author '<?= htmlspecialchars($authorToDelete['first_name'] . " " . $authorToDelete['last_name']) ?>'.
+            If you proceed with this action, Application will permanently delete all books related to this author.
+        </p>
+        <div class="actions">
+            <button type="submit" name="confirm" class="delete-btn">Delete</button>
+            <button type="submit" name="cancel" class="cancel-btn">Cancel</button>
+        </div>
     </div>
-
-    <h2>Confirm Delete</h2>
-    <div class="message">
-        Are you sure you want to delete author <br>
-        <strong><?= htmlspecialchars($author['name']) ?></strong>? This will also delete <strong><?= $bookCount ?> book<?= $bookCount !== 1 ? 's' : '' ?></strong> by this author.
-    </div>
-
-    <div class="buttons">
-        <form action="deleteAuthorAction.php" method="POST">
-            <input type="hidden" name="id" value="<?= $author['id'] ?>">
-            <button class="delete-button" type="submit">Delete</button>
-        </form>
-        <form action="listOfAuthors.php" method="GET">
-            <button class="cancel-button" type="submit">Cancel</button>
-        </form>
-    </div>
-</div>
-
+</form>
 </body>
 </html>
