@@ -1,0 +1,160 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Author List</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <style>
+
+            body {
+                font-family: Arial, sans-serif;
+            }
+
+            table {
+                border-collapse: separate;
+                border-spacing: 0;
+                width: 80%;
+                margin: 40px auto;
+            }
+
+            a {
+                color: black;
+                text-decoration: none;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            th {
+                text-align: left;
+                padding: 10px 12px;
+                font-weight: normal;
+                color: #666;
+                border-bottom: 2px solid #dcdcdc;
+            }
+
+            td {
+                padding: 10px 12px;
+                border-bottom: 1px solid transparent;
+                vertical-align: middle;
+            }
+
+            th:nth-child(2),
+            th:nth-child(3),
+            td:nth-child(2),
+            td:nth-child(3) {
+                text-align: right;
+            }
+
+            th:nth-child(2), td:nth-child(2) {
+                width: 10%;
+                text-align: center;
+            }
+
+            th:nth-child(3), td:nth-child(3) {
+                width: 12%;
+                text-align: right;
+            }
+
+            .book-count {
+                display: inline-block;
+                background-color: #f0f1f5;
+                border-radius: 999px;
+                padding: 5px 12px;
+                font-size: 14px;
+            }
+
+            a.button {
+                text-decoration: none;
+                padding: 6px 12px;
+                border-radius: 4px;
+            }
+
+            .edit {
+                color: #4a90e2;
+            }
+
+            .delete {
+                color: #e94e4e;
+            }
+
+            .author-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                background-color: #e6efff;
+                color: #4a90e2;
+                margin-right: 10px;
+            }
+
+            .add {
+                display: block;
+                width: 80%;
+                margin: 20px auto 0 auto;
+                font-size: 30px;
+                color: #4a90e2;
+                background-color: white;
+                border-radius: 999px;
+                text-decoration: none;
+            }
+
+            .table-wrapper::after {
+                content: "";
+                display: block;
+                height: 2px;
+                background: #dcdcdc;
+                width: 80%;
+                margin: 20px auto;
+            }
+
+        </style>
+    </head>
+    <body>
+
+    <div class = "table-wrapper">
+        <table>
+            <tr>
+                <th>Author</th>
+                <th>Books</th>
+                <th>Actions</th>
+            </tr>
+            <?php foreach ($authors as $author): ?>
+                <tr>
+                    <td>
+                        <i class="fa-solid fa-user author-icon"></i>
+                        <a href="/public/filteredBooks.phtml?author_id=<?= $author['id'] ?>">
+                            <?= htmlspecialchars($author['first_name']) ?>
+                            <?= htmlspecialchars($author['last_name']) ?></a>
+
+                    </td>
+                    <td>
+                        <span class="book-count"><?= $author['books'] ?></span>
+                    </td>
+                    <td class="actions">
+                        <a class="button edit" href="index.php?page=editAuthor&id=<?= $author['id'] ?>">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <a class="button delete" href="index.php?page=deleteAuthor&id=<?= $author['id'] ?>">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    </div>
+
+    <a class="add" href="index.php?page=createAuthor">
+        <i class="fa-solid fa-plus"></i>
+    </a>
+
+    </body>
+
+    </html>
+
