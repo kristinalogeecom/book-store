@@ -9,6 +9,9 @@ session_start();
 
 class AuthorController
 {
+    /**
+     * @var AuthorService
+     */
     private AuthorService $authorService;
 
     public function __construct()
@@ -17,12 +20,22 @@ class AuthorController
         $this->authorService = new AuthorService($repository);
     }
 
+    /**
+     * List all authors.
+     *
+     * @return void
+     */
     public function listAuthors(): void
     {
         $authors = $this->authorService->getAuthors();
         include __DIR__ . '/../../public/pages/authorsList.phtml';
     }
 
+    /**
+     * Create a new author.
+     *
+     * @return void
+     */
     public function createAuthor(): void
     {
         $errors = [
@@ -42,26 +55,24 @@ class AuthorController
         $first_name = trim($_POST['first_name'] ?? '');
         $last_name = trim($_POST['last_name'] ?? '');
 
-
         try {
-
             $this->authorService->createAuthor($first_name, $last_name);
             header('Location: index.php?page=authorsList');
             exit;
-
         } catch (Exception $e) {
-
             $this->handleErrorMessages($e, $errors);
 
             include __DIR__ . '/../../public/pages/createAuthor.phtml';
             return;
         }
-
     }
 
-
     /**
-     * @throws Exception
+     * Edit an existing author.
+     *
+     * @param int $id Author ID
+     * @return void
+     * @throws Exception if author is not found
      */
     public function editAuthor(int $id): void
     {
@@ -102,25 +113,25 @@ class AuthorController
         $last_name = trim($_POST['last_name'] ?? '');
 
         try {
-
             $this->authorService->editAuthor($id, $first_name, $last_name);
             header('Location: index.php?page=authorsList');
             exit;
-
         } catch (Exception $e) {
-
             $this->handleErrorMessages($e, $errors);
-
             include __DIR__ . '/../../public/pages/editAuthor.phtml';
             return;
         }
-
     }
 
-
+    /**
+     * Handle error messages for author creating/editing.
+     *
+     * @param Exception $e
+     * @param array $errors Error messages array
+     * @return void
+     */
     private function handleErrorMessages(Exception $e, array &$errors): void
     {
-
         $errorMessages = json_decode($e->getMessage(), true);
 
         $errors['first_name'] = $errorMessages['first_name'] ?? '';
@@ -132,11 +143,19 @@ class AuthorController
     }
 
     /**
+     * Delete an author.
+     *
+     * @param int $id Author ID
+     * @return void
      * @throws Exception
      */
     public function deleteAuthor(int $id): void
     {
-        $author = $this->authorService->getAuthorById($id);
+        $author = null;
+
+        try {
+            $author = $this->authorService->getAuthorById($id);
+        } catch (Exception $e) {}
 
         if ($author === null) {
             header('Location: index.php?page=authorsList');
@@ -158,6 +177,5 @@ class AuthorController
             include __DIR__ . '/../../public/pages/deleteAuthor.phtml';
             return;
         }
-
     }
 }

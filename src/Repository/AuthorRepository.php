@@ -21,20 +21,23 @@ class AuthorRepository
         }
     }
 
-
+    /**
+     * Get all authors from session.
+     *
+     * @return array List of authors
+     */
     public function getAllAuthors(): array
     {
         return $_SESSION['authors'];
     }
 
-    public function getAllBooks(): array
-    {
-        if (!isset($_SESSION['books'])) {
-            $_SESSION['books'] = [];
-        }
-        return $_SESSION['books'];
-    }
-
+    /**
+     * Create a new author.
+     *
+     * @param $first_name
+     * @param $last_name
+     * @return void
+     */
     public function createAuthor($first_name, $last_name): void
     {
         $_SESSION['last_author_id']++;
@@ -48,6 +51,12 @@ class AuthorRepository
     }
 
     /**
+     * Edit an existing author.
+     *
+     * @param int $authorId Author ID
+     * @param string $first_name
+     * @param string $last_name
+     * @return void
      * @throws Exception
      */
     public function editAuthor(int $authorId, string $first_name, string $last_name): void
@@ -65,9 +74,12 @@ class AuthorRepository
     }
 
     /**
-     * @throws Exception
+     * Get an author by ID.
+     *
+     * @param int $id Author ID
+     * @return array|null Author data or null if not found
      */
-    public function getAuthorById(int $id)
+    public function getAuthorById(int $id): ?array
     {
         $authors = $this->getAllAuthors();
         foreach ($authors as $author) {
@@ -79,6 +91,10 @@ class AuthorRepository
     }
 
     /**
+     * Delete an author by ID.
+     *
+     * @param int $id Author ID
+     * @return void
      * @throws Exception
      */
     public function deleteAuthor(int $id): void
@@ -88,6 +104,7 @@ class AuthorRepository
             if ($author['id'] === $id) {
                 unset($authors[$key]);
                 $_SESSION['authors'] = array_values($authors);
+
                 return;
             }
         }

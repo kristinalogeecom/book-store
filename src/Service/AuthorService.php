@@ -8,19 +8,35 @@ session_start();
 
 class AuthorService
 {
+    /**
+     * @var AuthorRepository
+     */
     private AuthorRepository $repository;
 
+    /**
+     * @param AuthorRepository $repository
+     */
     public function __construct(AuthorRepository $repository)
     {
         $this->repository = $repository;
     }
 
+    /**
+     * Get all authors.
+     *
+     * @return array
+     */
     public function getAuthors(): array
     {
         return $this -> repository -> getAllAuthors();
     }
 
     /**
+     * Create a new author.
+     *
+     * @param string $first_name
+     * @param string $last_name
+     * @return void
      * @throws Exception
      */
     public function createAuthor(string $first_name, string $last_name): void
@@ -34,7 +50,14 @@ class AuthorService
         $this -> repository -> createAuthor($first_name, $last_name);
     }
 
+
     /**
+     * Edit an existing author.
+     *
+     * @param int $authorId Author ID
+     * @param string $first_name
+     * @param string $last_name
+     * @return void
      * @throws Exception
      */
     public function editAuthor(int $authorId, string $first_name, string $last_name): void
@@ -48,6 +71,13 @@ class AuthorService
         $this -> repository -> editAuthor($authorId, $first_name, $last_name);
     }
 
+    /**
+     * Validate author data.
+     *
+     * @param string $first_name
+     * @param string $last_name
+     * @return array Validation errors
+     */
     private function validateAuthorData(string $first_name, string $last_name): array
     {
         $errors = [];
@@ -72,14 +102,21 @@ class AuthorService
     }
 
     /**
-     * @throws Exception
+     * Get an author by ID.
+     *
+     * @param int $id Author ID
+     * @return array|null Author data or null if not found
      */
-    public function getAuthorById(int $id)
+    public function getAuthorById(int $id): ?array
     {
         return $this->repository->getAuthorById($id);
     }
 
     /**
+     * Delete an author by ID.
+     *
+     * @param int $id Author ID
+     * @return void
      * @throws Exception
      */
     public function deleteAuthor(int $id): void
