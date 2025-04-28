@@ -26,73 +26,120 @@ class AuthorController
 
     public function createAuthor(): void
     {
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $errors = [
+            'first_name' => '',
+            'last_name' => '',
+            'general' => '',
+        ];
+
+        $first_name = '';
+        $last_name = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $first_name = trim($_POST['first_name'] ?? '');
             $last_name = trim($_POST['last_name'] ?? '');
 
-            $errors = [];
-
-            if(empty($first_name)) {
-                $errors[] = 'First name is required';
+            if (empty($first_name)) {
+                $errors['first_name'] = 'First name is required';
             }
 
-            if(empty($last_name)) {
-                $errors[] = 'Last name is required';
+            if (empty($last_name)) {
+                $errors['last_name'] = 'Last name is required';
             }
 
-            if(empty($errors)) {
+            if (empty($errors['first_name']) && empty($errors['last_name'])) {
                 try {
                     $this->authorService->createAuthor($first_name, $last_name);
                     header('Location: index.php?page=authorsList');
                     exit;
                 } catch (Exception $e) {
-                    $errors[] = $e->getMessage();
+                    $message = $e->getMessage();
+
+                    // Pametno raspoređivanje poruka
+                    if (str_contains($message, 'First name')) {
+                        $errors['first_name'] = $message;
+                    } elseif (str_contains($message, 'Last name')) {
+                        $errors['last_name'] = $message;
+                    } else {
+                        $errors['general'] = $message;
+                    }
                 }
             }
-
-            $error = implode('<br>', $errors);
-
         }
+
         include __DIR__ . '/../../public/pages/createAuthor.phtml';
     }
 
-    public function editAuthor(mixed $id)
+
+
+    public function editAuthor(): void
     {
-        $author = $this->authorService->getAuthorById($id);
-        if ($author === null) {
+        $errors = [
+            'first_name' => '',
+            'last_name' => '',
+            'general' => '',
+        ];
+
+        $first_name = '';
+        $last_name = '';
+
+        $id = (int)($_GET['id'] ?? 0);
+
+        if (!$id) {
+            // Nevalidan ID - možeš baciti grešku ili preusmeriti
             header('Location: index.php?page=authorsList');
             exit;
         }
 
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        try {
+            $author = $this->authorService->getAuthorById($id);
+            if (!$author) {
+                throw new Exception('Author not found.');
+            }
+        } catch (Exception $e) {
+            $errors['general'] = $e->getMessage();
+            $author = null;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $first_name = trim($_POST['first_name'] ?? '');
             $last_name = trim($_POST['last_name'] ?? '');
 
-            $errors = [];
-
-            if(empty($first_name)) {
-                $errors[] = 'First name is required';
+            if (empty($first_name)) {
+                $errors['first_name'] = 'First name is required';
             }
 
-            if(empty($last_name)) {
-                $errors[] = 'Last name is required';
+            if (empty($last_name)) {
+                $errors['last_name'] = 'Last name is required';
             }
 
-            if(empty($errors)) {
+            if (empty($errors['first_name']) && empty($errors['last_name'])) {
                 try {
                     $this->authorService->editAuthor($id, $first_name, $last_name);
                     header('Location: index.php?page=authorsList');
                     exit;
                 } catch (Exception $e) {
-                    $errors[] = $e->getMessage();
+                    $message = $e->getMessage();
+                    if (str_contains($message, 'First name')) {
+                        $errors['first_name'] = $message;
+                    } elseif (str_contains($message, 'Last name')) {
+                        $errors['last_name'] = $message;
+                    } else {
+                        $errors['general'] = $message;
+                    }
                 }
             }
-
-            $error = implode('<br>', $errors);
-
+        } else {
+            // Ako je GET zahtev, punimo formu sa postojećim podacima
+            if ($author) {
+                $first_name = $author['first_name'];
+                $last_name = $author['last_name'];
+            }
         }
+
         include __DIR__ . '/../../public/pages/editAuthor.phtml';
     }
+
 
     public function deleteAuthor(mixed $id)
     {

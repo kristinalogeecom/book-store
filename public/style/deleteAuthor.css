@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 40px;
+}
+
+.dialog {
+    width: 47%;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 24px;
+}
+
+.icon {
+    color: #d93025;
+    font-size: 24px;
+    margin-right: 8px;
+}
+
+h2 {
+    display: flex;
+    align-items: center;
+    color: black;
+}
+
+p {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.actions button {
+    padding: 10px 16px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background-color: #e94e4e;
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #f1f1f1;
+    color: #333;
+}
