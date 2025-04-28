@@ -15,25 +15,6 @@ class AuthorService
         $this->repository = $repository;
     }
 
-    public function getAuthorsWithBookCount(): array
-    {
-        $authors = $this->repository->getAllAuthors();
-        $books = $this->repository->getAllBooks();
-
-        $bookCounts = [];
-        foreach ($books as $book) {
-            $authorId = $book['author']['id'];
-            $bookCounts[$authorId] = ($bookCounts[$authorId] ?? 0) + 1;
-        }
-
-        foreach ($authors as &$author) {
-            $authorId = $author['id'];
-            $author['books'] = $bookCounts[$authorId] ?? 0;
-        }
-
-        return $authors;
-    }
-
     public function getAuthors(): array
     {
         return $this -> repository -> getAllAuthors();
@@ -42,14 +23,12 @@ class AuthorService
     /**
      * @throws Exception
      */
-    public function createAuthor(mixed $first_name, mixed $last_name): void
+    public function createAuthor(string $first_name, string $last_name): void
     {
-        if(strlen($first_name) > 100) {
-            throw new Exception('First name cannot exceed 100 characters.');
-        }
+        $errors = $this->validateAuthorData($first_name, $last_name);
 
-        if(strlen($last_name) > 100) {
-            throw new Exception('Last name cannot exceed 100 characters.');
+        if (!empty($errors)) {
+            throw new Exception(json_encode($errors));
         }
 
         $this -> repository -> createAuthor($first_name, $last_name);
@@ -58,28 +37,52 @@ class AuthorService
     /**
      * @throws Exception
      */
-    public function editAuthor(mixed $authorId, string $first_name, string $last_name): void
+    public function editAuthor(int $authorId, string $first_name, string $last_name): void
     {
-        if(strlen($first_name) > 100) {
-            throw new Exception('First name cannot exceed 100 characters.');
-        }
+        $errors = $this->validateAuthorData($first_name, $last_name);
 
-        if(strlen($last_name) > 100) {
-            throw new Exception('Last name cannot exceed 100 characters.');
+        if (!empty($errors)) {
+            throw new Exception(json_encode($errors));
         }
 
         $this -> repository -> editAuthor($authorId, $first_name, $last_name);
     }
 
+    private function validateAuthorData(string $first_name, string $last_name): array
+    {
+        $errors = [];
+
+        if (empty($first_name)) {
+            $errors['first_name'] = 'First name is required';
+        }
+
+        if (empty($last_name)) {
+            $errors['last_name'] = 'Last name is required';
+        }
+
+        if (strlen($first_name) > 100) {
+            $errors['first_name'] = 'First name cannot exceed 100 characters.';
+        }
+
+        if (strlen($last_name) > 100) {
+            $errors['last_name'] = 'Last name cannot exceed 100 characters.';
+        }
+
+        return $errors;
+    }
+
     /**
      * @throws Exception
      */
-    public function getAuthorById(mixed $id)
+    public function getAuthorById(int $id)
     {
         return $this->repository->getAuthorById($id);
     }
 
-    public function deleteAuthor(mixed $id)
+    /**
+     * @throws Exception
+     */
+    public function deleteAuthor(int $id): void
     {
         $this -> repository -> deleteAuthor($id);
     }
