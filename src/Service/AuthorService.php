@@ -1,9 +1,9 @@
 <?php
 
-namespace Service;
+namespace BookStore\Service;
 
 use Exception;
-use Repository\AuthorRepository;
+use BookStore\Repository\AuthorRepository;
 session_start();
 
 class AuthorService

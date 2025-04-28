@@ -1,10 +1,10 @@
 <?php
 
-namespace Controller;
+namespace BookStore\Controller;
 
 use Exception;
-use Service\AuthorService;
-use Repository\AuthorRepository;
+use BookStore\Service\AuthorService;
+use BookStore\Repository\AuthorRepository;
 session_start();
 
 class AuthorController

@@ -1,6 +1,6 @@
 <?php
 
-namespace Repository;
+namespace BookStore\Repository;
 
 use Exception;
 

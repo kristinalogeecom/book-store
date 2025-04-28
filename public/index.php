@@ -1,12 +1,10 @@
 <?php
-require_once __DIR__ . '/../src/Controller/AuthorController.php';
-require_once __DIR__ . '/../src/Service/AuthorService.php';
-require_once __DIR__ . '/../src/Repository/AuthorRepository.php';
 
-use Controller\AuthorController;
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use BookStore\Controller\AuthorController;
 
 $controller = new AuthorController();
-
 $page = $_GET['page'] ?? 'authorsList';
 
 switch ($page) {
