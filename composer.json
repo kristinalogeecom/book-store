@@ -1,0 +1,10 @@
+{
+    "name": "kristina/book-store",
+    "description": "PHP project for managing books and authors.",
+    "autoload": {
+        "psr-4": {
+            "BookStore\\": "src/"
+        }
+    },
+    "require": {}
+}
