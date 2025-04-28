@@ -6,12 +6,24 @@ use Exception;
 
 class AuthorRepository
 {
-    public function getAllAuthors(): array
+    public function __construct()
     {
-        session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
         if (!isset($_SESSION['authors'])) {
             $_SESSION['authors'] = [];
         }
+
+        if (!isset($_SESSION['last_author_id'])) {
+            $_SESSION['last_author_id'] = 0;
+        }
+    }
+
+
+    public function getAllAuthors(): array
+    {
         return $_SESSION['authors'];
     }
 
@@ -25,21 +37,14 @@ class AuthorRepository
 
     public function createAuthor($first_name, $last_name): void
     {
-        session_start();
-        if(!isset($_SESSION['authors'])) {
-            $_SESSION['authors'] = [];
-        }
+        $_SESSION['last_author_id']++;
+        $newID = $_SESSION['last_author_id'];
 
-        $authors = $_SESSION['authors'];
-        $newID = count($authors) > 0 ? max(array_column($authors, 'id')) + 1 : 1;
-
-        $authors[] = [
+        $_SESSION['authors'][] = [
             'id' => $newID,
             'first_name' => $first_name,
             'last_name' => $last_name,
         ];
-
-        $_SESSION['authors'] = $authors;
     }
 
     /**
@@ -73,7 +78,10 @@ class AuthorRepository
         return null;
     }
 
-    public function deleteAuthor(int $id)
+    /**
+     * @throws Exception
+     */
+    public function deleteAuthor(int $id): void
     {
         $authors = $this->getAllAuthors();
         foreach ($authors as $key => $author) {

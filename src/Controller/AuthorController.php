@@ -21,7 +21,7 @@ class AuthorController
     {
         $authors = $this->authorService->getAuthors();
         //$authors = $this->service->getAuthorsWithBookCount();
-        include __DIR__ . '/../../public/authorsList.phtml';
+        include __DIR__ . '/../../public/pages/authorsList.phtml';
     }
 
     public function createAuthor(): void
@@ -53,11 +53,11 @@ class AuthorController
             $error = implode('<br>', $errors);
 
         }
-        include __DIR__ . '/../../public/createAuthor.phtml';
+        include __DIR__ . '/../../public/pages/createAuthor.phtml';
     }
 
-    public function editAuthor(mixed $id) {
-
+    public function editAuthor(mixed $id)
+    {
         $author = $this->authorService->getAuthorById($id);
         if ($author === null) {
             header('Location: index.php?page=authorsList');
@@ -91,7 +91,7 @@ class AuthorController
             $error = implode('<br>', $errors);
 
         }
-        include __DIR__ . '/../../public/editAuthor.phtml';
+        include __DIR__ . '/../../public/pages/editAuthor.phtml';
     }
 
     public function deleteAuthor(mixed $id)
@@ -111,6 +111,6 @@ class AuthorController
                 $errors = $e->getMessage();
             }
         }
-        include __DIR__ . '/../../public/deleteAuthor.phtml';
+        include __DIR__ . '/../../public/pages/deleteAuthor.phtml';
     }
 }
