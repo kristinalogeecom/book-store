@@ -4,7 +4,6 @@ namespace BookStore\Controller;
 
 use Exception;
 use BookStore\Service\AuthorService;
-use BookStore\Repository\AuthorRepository;
 session_start();
 
 class AuthorController
@@ -14,10 +13,9 @@ class AuthorController
      */
     private AuthorService $authorService;
 
-    public function __construct()
+    public function __construct(AuthorService $authorService)
     {
-        $repository = new AuthorRepository();
-        $this->authorService = new AuthorService($repository);
+        $this->authorService = $authorService;
     }
 
     /**

@@ -3,8 +3,12 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use BookStore\Controller\AuthorController;
+use BookStore\Infrastructure\ServiceRegistry;
 
-$controller = new AuthorController();
+$registry = new ServiceRegistry();
+
+$controller = $registry->get(AuthorController::class);
+
 $page = $_GET['page'] ?? 'authorsList';
 
 switch ($page) {
