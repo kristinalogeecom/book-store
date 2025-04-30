@@ -10,11 +10,14 @@ class AuthorController
     /**
      * @var AuthorService
      */
-    private AuthorService $authorService;
+    private AuthorService $author_service;
 
-    public function __construct(AuthorService $authorService)
+    /**
+     * @param AuthorService $author_service
+     */
+    public function __construct(AuthorService $author_service)
     {
-        $this->authorService = $authorService;
+        $this->author_service = $author_service;
     }
 
     /**
@@ -22,9 +25,9 @@ class AuthorController
      *
      * @return void
      */
-    public function listAuthors(): void
+    public function list_authors(): void
     {
-        $authors = $this->authorService->getAuthors();
+        $authors = $this->author_service->get_authors();
         include __DIR__ . '/../../public/pages/authorsList.phtml';
     }
 
@@ -33,7 +36,7 @@ class AuthorController
      *
      * @return void
      */
-    public function createAuthor(): void
+    public function create_author(): void
     {
         $errors = [
             'first_name' => '',
@@ -41,11 +44,9 @@ class AuthorController
             'general' => '',
         ];
 
-        $first_name = '';
-        $last_name = '';
-
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             include __DIR__ . '/../../public/pages/createAuthor.phtml';
+
             return;
         }
 
@@ -53,13 +54,13 @@ class AuthorController
         $last_name = trim($_POST['last_name'] ?? '');
 
         try {
-            $this->authorService->createAuthor($first_name, $last_name);
+            $this->author_service->create_author($first_name, $last_name);
             header('Location: index.php?page=authorsList');
             exit;
         } catch (Exception $e) {
-            $this->handleErrorMessages($e, $errors);
-
+            $this->handle_error_messages($e, $errors);
             include __DIR__ . '/../../public/pages/createAuthor.phtml';
+
             return;
         }
     }
@@ -71,7 +72,7 @@ class AuthorController
      * @return void
      * @throws Exception if author is not found
      */
-    public function editAuthor(int $id): void
+    public function edit_author(int $id): void
     {
         $errors = [
             'first_name' => '',
@@ -79,16 +80,13 @@ class AuthorController
             'general' => '',
         ];
 
-        $first_name = '';
-        $last_name = '';
-
         if (!$id) {
             header('Location: index.php?page=authorsList');
             exit;
         }
 
         try {
-            $author = $this->authorService->getAuthorById($id);
+            $author = $this->author_service->get_author_by_id($id);
             if (!$author) {
                 throw new Exception('Author not found.');
             }
@@ -103,6 +101,7 @@ class AuthorController
                 $last_name = $author['last_name'];
             }
             include __DIR__ . '/../../public/pages/editAuthor.phtml';
+
             return;
         }
 
@@ -110,12 +109,52 @@ class AuthorController
         $last_name = trim($_POST['last_name'] ?? '');
 
         try {
-            $this->authorService->editAuthor($id, $first_name, $last_name);
+            $this->author_service->edit_author($id, $first_name, $last_name);
             header('Location: index.php?page=authorsList');
             exit;
         } catch (Exception $e) {
-            $this->handleErrorMessages($e, $errors);
+            $this->handle_error_messages($e, $errors);
             include __DIR__ . '/../../public/pages/editAuthor.phtml';
+
+            return;
+        }
+    }
+
+    /**
+     * Delete an author.
+     *
+     * @param int $id Author ID
+     * @return void
+     * @throws Exception
+     */
+    public function delete_author(int $id): void
+    {
+        $author = null;
+
+        try {
+            $author = $this->author_service->get_author_by_id($id);
+        } catch (Exception $e) {}
+
+        if ($author === null) {
+            header('Location: index.php?page=authorsList');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            include __DIR__ . '/../../public/pages/deleteAuthor.phtml';
+
+            return;
+        }
+
+        try {
+            $this -> author_service -> delete_author($id);
+            header('Location: index.php?page=authorsList');
+            exit;
+
+        } catch (Exception $e) {
+            $errors = $e->getMessage();
+            include __DIR__ . '/../../public/pages/deleteAuthor.phtml';
+
             return;
         }
     }
@@ -127,52 +166,15 @@ class AuthorController
      * @param array $errors Error messages array
      * @return void
      */
-    private function handleErrorMessages(Exception $e, array &$errors): void
+    private function handle_error_messages(Exception $e, array &$errors): void
     {
-        $errorMessages = json_decode($e->getMessage(), true);
+        $error_messages = json_decode($e->getMessage(), true);
 
-        $errors['first_name'] = $errorMessages['first_name'] ?? '';
-        $errors['last_name'] = $errorMessages['last_name'] ?? '';
+        $errors['first_name'] = $error_messages['first_name'] ?? '';
+        $errors['last_name'] = $error_messages['last_name'] ?? '';
 
         if (empty($errors['first_name']) && empty($errors['last_name'])) {
-            $errors['general'] = $errorMessages['general'] ?? 'An error occurred during the process.';
-        }
-    }
-
-    /**
-     * Delete an author.
-     *
-     * @param int $id Author ID
-     * @return void
-     * @throws Exception
-     */
-    public function deleteAuthor(int $id): void
-    {
-        $author = null;
-
-        try {
-            $author = $this->authorService->getAuthorById($id);
-        } catch (Exception $e) {}
-
-        if ($author === null) {
-            header('Location: index.php?page=authorsList');
-            exit;
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            include __DIR__ . '/../../public/pages/deleteAuthor.phtml';
-            return;
-        }
-
-        try {
-            $this -> authorService -> deleteAuthor($id);
-            header('Location: index.php?page=authorsList');
-            exit;
-
-        } catch (Exception $e) {
-            $errors = $e->getMessage();
-            include __DIR__ . '/../../public/pages/deleteAuthor.phtml';
-            return;
+            $errors['general'] = $error_messages['general'] ?? 'An error occurred during the process.';
         }
     }
 }

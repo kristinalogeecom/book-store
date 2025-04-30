@@ -13,24 +13,20 @@ $page = $_GET['page'] ?? 'authorsList';
 
 switch ($page) {
     case 'authorsList':
-        $controller->listAuthors();
+        $controller->list_authors();
         break;
     case 'createAuthor':
-        $controller->createAuthor();
+        $controller->create_author();
         break;
     case 'editAuthor':
         try {
-            $controller->editAuthor($_GET['id'] ?? null);
-        } catch (Exception $e) {
-
-        }
+            $controller->edit_author($_GET['id'] ?? null);
+        } catch (Exception $e) {}
         break;
     case 'deleteAuthor':
         try {
-            $controller->deleteAuthor($_GET['id'] ?? null);
-        } catch (Exception $e) {
-
-        }
+            $controller->delete_author($_GET['id'] ?? null);
+        } catch (Exception $e) {}
         break;
     default:
         echo "404 - Page not found";

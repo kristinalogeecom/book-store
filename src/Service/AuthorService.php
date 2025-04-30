@@ -4,7 +4,6 @@ namespace BookStore\Service;
 
 use Exception;
 use BookStore\Repository\AuthorRepository;
-session_start();
 
 class AuthorService
 {
@@ -26,9 +25,9 @@ class AuthorService
      *
      * @return array
      */
-    public function getAuthors(): array
+    public function get_authors(): array
     {
-        return $this -> repository -> getAllAuthors();
+        return $this->repository->get_all_authors();
     }
 
     /**
@@ -39,35 +38,58 @@ class AuthorService
      * @return void
      * @throws Exception
      */
-    public function createAuthor(string $first_name, string $last_name): void
+    public function create_author(string $first_name, string $last_name): void
     {
-        $errors = $this->validateAuthorData($first_name, $last_name);
+        $errors = $this->validate_author_data($first_name, $last_name);
 
         if (!empty($errors)) {
             throw new Exception(json_encode($errors));
         }
 
-        $this -> repository -> createAuthor($first_name, $last_name);
+        $this->repository->create_author($first_name, $last_name);
     }
 
     /**
      * Edit an existing author.
      *
-     * @param int $authorId Author ID
+     * @param int $author_id Author ID
      * @param string $first_name
      * @param string $last_name
      * @return void
      * @throws Exception
      */
-    public function editAuthor(int $authorId, string $first_name, string $last_name): void
+    public function edit_author(int $author_id, string $first_name, string $last_name): void
     {
-        $errors = $this->validateAuthorData($first_name, $last_name);
+        $errors = $this->validate_author_data($first_name, $last_name);
 
         if (!empty($errors)) {
             throw new Exception(json_encode($errors));
         }
 
-        $this -> repository -> editAuthor($authorId, $first_name, $last_name);
+        $this->repository->edit_author($author_id, $first_name, $last_name);
+    }
+
+    /**
+     * Get an author by ID.
+     *
+     * @param int $id Author ID
+     * @return array|null Author data or null if not found
+     */
+    public function get_author_by_id(int $id): ?array
+    {
+        return $this->repository->get_author_by_id($id);
+    }
+
+    /**
+     * Delete an author by ID.
+     *
+     * @param int $id Author ID
+     * @return void
+     * @throws Exception
+     */
+    public function delete_author(int $id): void
+    {
+        $this->repository->delete_author($id);
     }
 
     /**
@@ -77,7 +99,7 @@ class AuthorService
      * @param string $last_name
      * @return array Validation errors
      */
-    private function validateAuthorData(string $first_name, string $last_name): array
+    private function validate_author_data(string $first_name, string $last_name): array
     {
         $errors = [];
 
@@ -98,28 +120,5 @@ class AuthorService
         }
 
         return $errors;
-    }
-
-    /**
-     * Get an author by ID.
-     *
-     * @param int $id Author ID
-     * @return array|null Author data or null if not found
-     */
-    public function getAuthorById(int $id): ?array
-    {
-        return $this->repository->getAuthorById($id);
-    }
-
-    /**
-     * Delete an author by ID.
-     *
-     * @param int $id Author ID
-     * @return void
-     * @throws Exception
-     */
-    public function deleteAuthor(int $id): void
-    {
-        $this -> repository -> deleteAuthor($id);
     }
 }

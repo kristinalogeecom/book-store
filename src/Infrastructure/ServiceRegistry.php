@@ -20,16 +20,16 @@ class ServiceRegistry
      *
      * @return void
      */
-    public function initializeServices(): void
+    public function initialize_services(): void
     {
-        $authorRepository = $this->factory->createAuthorRepository();
-        $this->set(AuthorRepository::class, $authorRepository);
+        $author_repository = $this->factory->create_author_repository();
+        $this->set(AuthorRepository::class, $author_repository);
 
-        $authorService = $this->factory->createAuthorService($authorRepository);
-        $this->set(AuthorService::class, $authorService);
+        $author_service = $this->factory->create_author_service($author_repository);
+        $this->set(AuthorService::class, $author_service);
 
-        $authorController = $this->factory->createAuthorController($authorService);
-        $this->set(AuthorController::class, $authorController);
+        $author_controller = $this->factory->create_author_controller($author_service);
+        $this->set(AuthorController::class, $author_controller);
     }
 
     /**
@@ -54,8 +54,9 @@ class ServiceRegistry
     public function get(string $key): object
     {
         if (!isset($this->services[$key])) {
-            $this->initializeServices();
+            $this->initialize_services();
         }
+
         return $this->services[$key];
     }
 

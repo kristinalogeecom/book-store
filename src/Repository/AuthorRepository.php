@@ -19,7 +19,7 @@ class AuthorRepository
      *
      * @return array List of authors
      */
-    public function getAllAuthors(): array
+    public function get_all_authors(): array
     {
         $query = "SELECT * FROM authors";
         $stmt = $this->pdo->prepare($query);
@@ -35,7 +35,7 @@ class AuthorRepository
      * @param $last_name
      * @return void
      */
-    public function createAuthor($first_name, $last_name): void
+    public function create_author($first_name, $last_name): void
     {
         $query = "INSERT INTO authors(first_name, last_name) VALUES(?, ?)";
         $stmt = $this->pdo->prepare($query);
@@ -45,17 +45,17 @@ class AuthorRepository
     /**
      * Edit an existing author.
      *
-     * @param int $authorId Author ID
+     * @param int $author_id Author ID
      * @param string $first_name
      * @param string $last_name
      * @return void
      * @throws Exception
      */
-    public function editAuthor(int $authorId, string $first_name, string $last_name): void
+    public function edit_author(int $author_id, string $first_name, string $last_name): void
     {
         $query = "UPDATE authors SET first_name = ?, last_name = ? WHERE id = ?";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$first_name, $last_name, $authorId]);
+        $stmt->execute([$first_name, $last_name, $author_id]);
 
         if ($stmt->rowCount() === 0) {
             throw new Exception('Author not found.');
@@ -68,7 +68,7 @@ class AuthorRepository
      * @param int $id Author ID
      * @return array|null Author data or null if not found
      */
-    public function getAuthorById(int $id): ?array
+    public function get_author_by_id(int $id): ?array
     {
         $query = "SELECT * FROM authors WHERE id = ?";
         $stmt = $this->pdo->prepare($query);
@@ -85,7 +85,7 @@ class AuthorRepository
      * @return void
      * @throws Exception
      */
-    public function deleteAuthor(int $id): void
+    public function delete_author(int $id): void
     {
         $query = "DELETE FROM authors WHERE id = ?";
         $stmt = $this->pdo->prepare($query);

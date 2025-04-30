@@ -14,7 +14,7 @@ class Factory
      *
      * @return AuthorRepository
      */
-    public function createAuthorRepository(): AuthorRepository
+    public function create_author_repository(): AuthorRepository
     {
         $pdo = DatabaseConnection::connect();
         return new AuthorRepository($pdo);
@@ -26,20 +26,19 @@ class Factory
      * @param AuthorRepository $repository
      * @return AuthorService
      */
-    public function createAuthorService(AuthorRepository $repository): AuthorService
+    public function create_author_service(AuthorRepository $repository): AuthorService
     {
-
         return new AuthorService($repository);
     }
 
     /**
      * Create an instance of AuthorController.
      *
-     * @param AuthorService $authorService
+     * @param AuthorService $author_service
      * @return AuthorController
      */
-    public function createAuthorController(AuthorService $authorService): AuthorController
+    public function create_author_controller(AuthorService $author_service): AuthorController
     {
-        return new AuthorController($authorService);
+        return new AuthorController($author_service);
     }
 }
