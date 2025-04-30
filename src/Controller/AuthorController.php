@@ -4,7 +4,6 @@ namespace BookStore\Controller;
 
 use Exception;
 use BookStore\Service\AuthorService;
-session_start();
 
 class AuthorController
 {

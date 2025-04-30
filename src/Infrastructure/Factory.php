@@ -2,6 +2,7 @@
 
 namespace BookStore\Infrastructure;
 
+use BookStore\Database\DatabaseConnection;
 use BookStore\Repository\AuthorRepository;
 use BookStore\Service\AuthorService;
 use BookStore\Controller\AuthorController;
@@ -15,7 +16,8 @@ class Factory
      */
     public function createAuthorRepository(): AuthorRepository
     {
-        return new AuthorRepository();
+        $pdo = DatabaseConnection::connect();
+        return new AuthorRepository($pdo);
     }
 
     /**
@@ -26,6 +28,7 @@ class Factory
      */
     public function createAuthorService(AuthorRepository $repository): AuthorService
     {
+
         return new AuthorService($repository);
     }
 

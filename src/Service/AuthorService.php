@@ -50,7 +50,6 @@ class AuthorService
         $this -> repository -> createAuthor($first_name, $last_name);
     }
 
-
     /**
      * Edit an existing author.
      *

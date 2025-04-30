@@ -2,23 +2,16 @@
 
 namespace BookStore\Repository;
 
+use PDO;
 use Exception;
 
 class AuthorRepository
 {
-    public function __construct()
+    private PDO $pdo;
+
+    public function __construct(PDO $pdo)
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['authors'])) {
-            $_SESSION['authors'] = [];
-        }
-
-        if (!isset($_SESSION['last_author_id'])) {
-            $_SESSION['last_author_id'] = 0;
-        }
+        $this->pdo = $pdo;
     }
 
     /**
@@ -28,7 +21,11 @@ class AuthorRepository
      */
     public function getAllAuthors(): array
     {
-        return $_SESSION['authors'];
+        $query = "SELECT * FROM authors";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
     }
 
     /**
@@ -40,14 +37,9 @@ class AuthorRepository
      */
     public function createAuthor($first_name, $last_name): void
     {
-        $_SESSION['last_author_id']++;
-        $newID = $_SESSION['last_author_id'];
-
-        $_SESSION['authors'][] = [
-            'id' => $newID,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-        ];
+        $query = "INSERT INTO authors(first_name, last_name) VALUES(?, ?)";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$first_name, $last_name]);
     }
 
     /**
@@ -61,16 +53,13 @@ class AuthorRepository
      */
     public function editAuthor(int $authorId, string $first_name, string $last_name): void
     {
-        $authors = $this->getAllAuthors();
-        foreach ($authors as $key => $author) {
-            if($author['id'] === $authorId) {
-                $authors[$key]['first_name'] = $first_name;
-                $authors[$key]['last_name'] = $last_name;
-                $_SESSION['authors'] = $authors;
-                return;
-            }
+        $query = "UPDATE authors SET first_name = ?, last_name = ? WHERE id = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$first_name, $last_name, $authorId]);
+
+        if ($stmt->rowCount() === 0) {
+            throw new Exception('Author not found.');
         }
-        throw new Exception('Author not found.');
     }
 
     /**
@@ -81,13 +70,12 @@ class AuthorRepository
      */
     public function getAuthorById(int $id): ?array
     {
-        $authors = $this->getAllAuthors();
-        foreach ($authors as $author) {
-            if ($author['id'] === $id) {
-                return $author;
-            }
-        }
-        return null;
+        $query = "SELECT * FROM authors WHERE id = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$id]);
+        $author = $stmt->fetch();
+
+        return $author ?: null;
     }
 
     /**
@@ -99,15 +87,13 @@ class AuthorRepository
      */
     public function deleteAuthor(int $id): void
     {
-        $authors = $this->getAllAuthors();
-        foreach ($authors as $key => $author) {
-            if ($author['id'] === $id) {
-                unset($authors[$key]);
-                $_SESSION['authors'] = array_values($authors);
+        $query = "DELETE FROM authors WHERE id = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$id]);
 
-                return;
-            }
+        if ($stmt->rowCount() === 0) {
+            throw new Exception('Author not found.');
         }
-        throw new Exception('Author not found.');
     }
+
 }
