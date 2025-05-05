@@ -2,7 +2,7 @@
 
 namespace BookStore\Infrastructure;
 
-use BookStore\Repository\AuthorRepository;
+use BookStore\Repository\AuthorRepositoryInterface;
 use BookStore\Service\AuthorService;
 use BookStore\Controller\AuthorController;
 
@@ -22,8 +22,8 @@ class ServiceRegistry
      */
     public function initialize_services(): void
     {
-        $author_repository = $this->factory->create_author_repository();
-        $this->set(AuthorRepository::class, $author_repository);
+        $author_repository = $this->factory->create_author_repository('db');
+        $this->set(AuthorRepositoryInterface::class, $author_repository);
 
         $author_service = $this->factory->create_author_service($author_repository);
         $this->set(AuthorService::class, $author_service);
@@ -53,9 +53,9 @@ class ServiceRegistry
      */
     public function get(string $key): object
     {
-        if (!isset($this->services[$key])) {
-            $this->initialize_services();
-        }
+//        if (!isset($this->services[$key])) {
+//            $this->initialize_services();
+//        }
 
         return $this->services[$key];
     }

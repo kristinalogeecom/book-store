@@ -1,11 +1,14 @@
 <?php
 
+session_start();
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use BookStore\Controller\AuthorController;
 use BookStore\Infrastructure\ServiceRegistry;
 
 $registry = new ServiceRegistry();
+$registry->initialize_services();
 
 $controller = $registry->get(AuthorController::class);
 

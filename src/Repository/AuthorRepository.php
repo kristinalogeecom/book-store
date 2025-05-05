@@ -5,7 +5,7 @@ namespace BookStore\Repository;
 use PDO;
 use Exception;
 
-class AuthorRepository
+class AuthorRepository implements AuthorRepositoryInterface
 {
     private PDO $pdo;
 
@@ -15,7 +15,7 @@ class AuthorRepository
     }
 
     /**
-     * Get all authors from session.
+     * Get all authors from database.
      *
      * @return array List of authors
      */
@@ -63,37 +63,37 @@ class AuthorRepository
     }
 
     /**
-     * Get an author by ID.
-     *
-     * @param int $id Author ID
-     * @return array|null Author data or null if not found
-     */
-    public function get_author_by_id(int $id): ?array
-    {
-        $query = "SELECT * FROM authors WHERE id = ?";
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$id]);
-        $author = $stmt->fetch();
-
-        return $author ?: null;
-    }
-
-    /**
      * Delete an author by ID.
      *
-     * @param int $id Author ID
+     * @param int $author_id Author ID
      * @return void
      * @throws Exception
      */
-    public function delete_author(int $id): void
+    public function delete_author(int $author_id): void
     {
         $query = "DELETE FROM authors WHERE id = ?";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$id]);
+        $stmt->execute([$author_id]);
 
         if ($stmt->rowCount() === 0) {
             throw new Exception('Author not found.');
         }
+    }
+
+    /**
+     * Get an author by ID.
+     *
+     * @param int $author_id Author ID
+     * @return array|null Author data or null if not found
+     */
+    public function get_author_by_id(int $author_id): ?array
+    {
+        $query = "SELECT * FROM authors WHERE id = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$author_id]);
+        $author = $stmt->fetch();
+
+        return $author ?: null;
     }
 
 }

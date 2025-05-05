@@ -3,19 +3,19 @@
 namespace BookStore\Service;
 
 use Exception;
-use BookStore\Repository\AuthorRepository;
+use BookStore\Repository\AuthorRepositoryInterface;
 
 class AuthorService
 {
     /**
-     * @var AuthorRepository
+     * @var AuthorRepositoryInterface
      */
-    private AuthorRepository $repository;
+    private AuthorRepositoryInterface $repository;
 
     /**
-     * @param AuthorRepository $repository
+     * @param AuthorRepositoryInterface $repository
      */
-    public function __construct(AuthorRepository $repository)
+    public function __construct(AuthorRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

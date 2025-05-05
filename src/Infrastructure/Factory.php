@@ -3,21 +3,30 @@
 namespace BookStore\Infrastructure;
 
 use BookStore\Database\DatabaseConnection;
+use BookStore\Repository\AuthorRepositoryInterface;
 use BookStore\Repository\AuthorRepository;
+use BookStore\Repository\AuthorRepositorySession;
 use BookStore\Service\AuthorService;
 use BookStore\Controller\AuthorController;
 
 class Factory
 {
+
+
     /**
-     * Create an instance of AuthorRepository.
-     *
-     * @return AuthorRepository
+     * @param string $type
+     * @return AuthorRepositoryInterface
      */
-    public function create_author_repository(): AuthorRepository
+    public function create_author_repository(string $type = 'session'): AuthorRepositoryInterface
     {
-        $pdo = DatabaseConnection::connect();
-        return new AuthorRepository($pdo);
+        if($type === 'session') {
+            return new AuthorRepositorySession();
+        } else if ($type === 'db') {
+            $pdo = DatabaseConnection::connect();
+            return new AuthorRepository($pdo);
+        }
+
+        throw new \InvalidArgumentException("Unknown repository type: $type");
     }
 
     /**
@@ -26,7 +35,7 @@ class Factory
      * @param AuthorRepository $repository
      * @return AuthorService
      */
-    public function create_author_service(AuthorRepository $repository): AuthorService
+    public function create_author_service(AuthorRepositoryInterface $repository): AuthorService
     {
         return new AuthorService($repository);
     }
