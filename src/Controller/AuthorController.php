@@ -2,6 +2,8 @@
 
 namespace BookStore\Controller;
 
+use BookStore\Response\HtmlResponse;
+use BookStore\Response\RedirectResponse;
 use Exception;
 use BookStore\Service\AuthorService;
 
@@ -28,7 +30,7 @@ class AuthorController
     public function list_authors(): void
     {
         $authors = $this->author_service->get_authors();
-        include __DIR__ . '/../../public/pages/authorsList.phtml';
+        HtmlResponse::view('authorsList', ['authors' => $authors])->send();
     }
 
     /**
@@ -38,14 +40,10 @@ class AuthorController
      */
     public function create_author(): void
     {
-        $errors = [
-            'first_name' => '',
-            'last_name' => '',
-            'general' => '',
-        ];
+        $errors = ['first_name' => '', 'last_name' => '', 'general' => ''];
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            include __DIR__ . '/../../public/pages/createAuthor.phtml';
+            HtmlResponse::view('createAuthor', ['errors'=>$errors])->send();
 
             return;
         }
@@ -55,13 +53,14 @@ class AuthorController
 
         try {
             $this->author_service->create_author($first_name, $last_name);
-            header('Location: index.php?page=authorsList');
-            exit;
+            RedirectResponse::to('index.php?page=authorsList')->send();
         } catch (Exception $e) {
             $this->handle_error_messages($e, $errors);
-            include __DIR__ . '/../../public/pages/createAuthor.phtml';
-
-            return;
+            HtmlResponse::view('createAuthor', [
+                'errors' => $errors,
+                'first_name' => $first_name,
+                'last_name' => $last_name
+            ])->send();
         }
     }
 
@@ -74,15 +73,12 @@ class AuthorController
      */
     public function edit_author(int $id): void
     {
-        $errors = [
-            'first_name' => '',
-            'last_name' => '',
-            'general' => '',
-        ];
+        $errors = ['first_name' => '', 'last_name' => '', 'general' => ''];
 
         if (!$id) {
-            header('Location: index.php?page=authorsList');
-            exit;
+            RedirectResponse::to('index.php?page=authorsList')->send();
+
+            return;
         }
 
         try {
@@ -96,12 +92,10 @@ class AuthorController
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            if($author) {
-                $first_name = $author['first_name'];
-                $last_name = $author['last_name'];
-            }
-            include __DIR__ . '/../../public/pages/editAuthor.phtml';
-
+            HtmlResponse::view('editAuthor', [
+                'author' => $author,
+                'errors' => $errors,
+            ])->send();
             return;
         }
 
@@ -110,13 +104,17 @@ class AuthorController
 
         try {
             $this->author_service->edit_author($id, $first_name, $last_name);
-            header('Location: index.php?page=authorsList');
-            exit;
+            RedirectResponse::to('index.php?page=authorsList')->send();
         } catch (Exception $e) {
             $this->handle_error_messages($e, $errors);
-            include __DIR__ . '/../../public/pages/editAuthor.phtml';
-
-            return;
+            HtmlResponse::view('editAuthor', [
+                'author' => [
+                    'id' => $id,
+                    'first_name' => $first_name,
+                    'last_name' => $last_name
+                ],
+                'errors' => $errors,
+            ])->send();
         }
     }
 
@@ -129,33 +127,30 @@ class AuthorController
      */
     public function delete_author(int $id): void
     {
-        $author = null;
-
         try {
             $author = $this->author_service->get_author_by_id($id);
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+            $author = null;
+        }
 
         if ($author === null) {
-            header('Location: index.php?page=authorsList');
-            exit;
+            RedirectResponse::to('index.php?page=authorsList')->send();
+            return;
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            include __DIR__ . '/../../public/pages/deleteAuthor.phtml';
-
+            HtmlResponse::view('deleteAuthor', ['author' => $author])->send();
             return;
         }
 
         try {
             $this -> author_service -> delete_author($id);
-            header('Location: index.php?page=authorsList');
-            exit;
-
+            RedirectResponse::to('index.php?page=authorsList')->send();
         } catch (Exception $e) {
-            $errors = $e->getMessage();
-            include __DIR__ . '/../../public/pages/deleteAuthor.phtml';
-
-            return;
+            HtmlResponse::view('deleteAuthor', [
+                'author' => $author,
+                'errors' => $e->getMessage()
+            ])->send();
         }
     }
 
