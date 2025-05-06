@@ -10,26 +10,33 @@ use BookStore\Infrastructure\ServiceRegistry;
 $registry = new ServiceRegistry();
 $registry->initialize_services();
 
-$controller = $registry->get(AuthorController::class);
+/** @var AuthorController $authorController */
+$authorController = $registry->get(AuthorController::class);
+
+/** @var AuthorController $authorController */
+$bookController = $registry->get(AuthorController::class);
 
 $page = $_GET['page'] ?? 'authorsList';
 
 switch ($page) {
     case 'authorsList':
-        $controller->list_authors();
+        $authorController->listAuthors()->send();
         break;
     case 'createAuthor':
-        $controller->create_author();
+        $authorController->create_author();
         break;
     case 'editAuthor':
         try {
-            $controller->edit_author($_GET['id'] ?? null);
+            $authorController->edit_author($_GET['id'] ?? null);
         } catch (Exception $e) {}
         break;
     case 'deleteAuthor':
         try {
-            $controller->delete_author($_GET['id'] ?? null);
+            $authorController->delete_author($_GET['id'] ?? null)->send();
         } catch (Exception $e) {}
+        break;
+    case 'authorBooks':
+        include __DIR__ . '/pages/authorBooks.html';
         break;
     default:
         echo "404 - Page not found";

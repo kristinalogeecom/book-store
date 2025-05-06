@@ -1,0 +1,147 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 2rem;
+    background-color: #fefefe;
+}
+
+
+
+/* Overlay background */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Form modal */
+.form-container {
+    width: 280px;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+h2 {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #666666;
+    font-weight: normal;
+}
+
+.form-divider {
+    border: none;
+    border-top: 1px solid #BEDCFE;
+    margin: 10px 0 20px 0;
+}
+
+/* proveri */
+.table-wrapper {
+    border-top: 2px solid #dcdcdc;
+    border-bottom: 2px solid #dcdcdc;
+    padding: 10px 0;
+}
+
+th {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: normal;
+    color: #666;
+    border-bottom: 2px solid #dcdcdc;
+}
+
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid transparent;
+    vertical-align: middle;
+}
+
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666666;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.error-msg {
+    color: red;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.btn-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+
+}
+
+button {
+    padding: 8px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #64b5f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: auto;
+}
+
+button:hover {
+    background-color: #42a5f5;
+}
+
+.back-btn {
+    margin-left: 10px;
+    background-color: #bdbdbd;
+}
+
+.back-btn:hover {
+    background-color: #9e9e9e;
+}
+
+/* Table styling */
+.book-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.book-table th, .book-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.add {
+    display: inline-block;
+    width: 80%;
+    margin: 20px auto 0 auto;
+    font-size: 30px;
+    color: #4a90e2;
+    cursor: pointer;
+}
+
+.edit-icon {
+    color: #0288d1;
+}
+
+.delete-icon {
+    color: #d32f2f;
+}

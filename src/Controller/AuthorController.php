@@ -4,6 +4,7 @@ namespace BookStore\Controller;
 
 use BookStore\Response\HtmlResponse;
 use BookStore\Response\RedirectResponse;
+use BookStore\Response\Response;
 use Exception;
 use BookStore\Service\AuthorService;
 
@@ -25,12 +26,13 @@ class AuthorController
     /**
      * List all authors.
      *
-     * @return void
+     * @return Response
      */
-    public function list_authors(): void
+    public function listAuthors(): Response
     {
-        $authors = $this->author_service->get_authors();
-        HtmlResponse::view('authorsList', ['authors' => $authors])->send();
+        $authors = $this->author_service->getAuthors();
+
+        return HtmlResponse::view('authorsList', ['authors' => $authors]);
     }
 
     /**
@@ -43,7 +45,7 @@ class AuthorController
         $errors = ['first_name' => '', 'last_name' => '', 'general' => ''];
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            HtmlResponse::view('createAuthor', ['errors'=>$errors])->send();
+            HtmlResponse::view('createAuthor', ['errors' => $errors])->send();
 
             return;
         }
@@ -122,7 +124,9 @@ class AuthorController
      * Delete an author.
      *
      * @param int $id Author ID
+     *
      * @return void
+     *
      * @throws Exception
      */
     public function delete_author(int $id): void
@@ -144,7 +148,7 @@ class AuthorController
         }
 
         try {
-            $this -> author_service -> delete_author($id);
+            $this->author_service->delete_author($id);
             RedirectResponse::to('index.php?page=authorsList')->send();
         } catch (Exception $e) {
             HtmlResponse::view('deleteAuthor', [
