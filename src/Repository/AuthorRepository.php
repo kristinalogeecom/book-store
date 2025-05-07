@@ -19,7 +19,7 @@ class AuthorRepository implements AuthorRepositoryInterface
      *
      * @return array List of authors
      */
-    public function get_all_authors(): array
+    public function getAllAuthors(): array
     {
         $query = "SELECT * FROM authors";
         $stmt = $this->pdo->prepare($query);
@@ -31,31 +31,31 @@ class AuthorRepository implements AuthorRepositoryInterface
     /**
      * Create a new author.
      *
-     * @param $first_name
-     * @param $last_name
+     * @param $firstName
+     * @param $lastName
      * @return void
      */
-    public function create_author($first_name, $last_name): void
+    public function createAuthor($firstName, $lastName): void
     {
         $query = "INSERT INTO authors(first_name, last_name) VALUES(?, ?)";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$first_name, $last_name]);
+        $stmt->execute([$firstName, $lastName]);
     }
 
     /**
      * Edit an existing author.
      *
-     * @param int $author_id Author ID
-     * @param string $first_name
-     * @param string $last_name
+     * @param int $authorId Author ID
+     * @param string $firstName
+     * @param string $lastName
      * @return void
      * @throws Exception
      */
-    public function edit_author(int $author_id, string $first_name, string $last_name): void
+    public function editAuthor(int $authorId, string $firstName, string $lastName): void
     {
         $query = "UPDATE authors SET first_name = ?, last_name = ? WHERE id = ?";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$first_name, $last_name, $author_id]);
+        $stmt->execute([$firstName, $lastName, $authorId]);
 
         if ($stmt->rowCount() === 0) {
             throw new Exception('Author not found.');
@@ -65,15 +65,15 @@ class AuthorRepository implements AuthorRepositoryInterface
     /**
      * Delete an author by ID.
      *
-     * @param int $author_id Author ID
+     * @param int $authorId Author ID
      * @return void
      * @throws Exception
      */
-    public function delete_author(int $author_id): void
+    public function deleteAuthor(int $authorId): void
     {
         $query = "DELETE FROM authors WHERE id = ?";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$author_id]);
+        $stmt->execute([$authorId]);
 
         if ($stmt->rowCount() === 0) {
             throw new Exception('Author not found.');
@@ -83,14 +83,14 @@ class AuthorRepository implements AuthorRepositoryInterface
     /**
      * Get an author by ID.
      *
-     * @param int $author_id Author ID
+     * @param int $authorId Author ID
      * @return array|null Author data or null if not found
      */
-    public function get_author_by_id(int $author_id): ?array
+    public function getAuthorById(int $authorId): ?array
     {
         $query = "SELECT * FROM authors WHERE id = ?";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$author_id]);
+        $stmt->execute([$authorId]);
         $author = $stmt->fetch();
 
         return $author ?: null;

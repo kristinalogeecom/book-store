@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const authorId = new URLSearchParams(window.location.search).get('author_id');
     let books = [];
 
+    const apiBase = '/index.php?api=books&action=';
+
     const createOverlay = () => {
         const overlay = document.createElement('div');
         overlay.id = 'overlay';
@@ -78,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (type === 'create') {
-                post('/api/books/createBook.php', { author_id: authorId, title, year })
+                post(`${apiBase}create`, { author_id: authorId, title, year })
                     .then(resp => {
                         if (resp.success) {
                             overlay.remove();
@@ -86,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
             } else if (type === 'edit') {
-                post('/api/books/editBook.php', { id: book.id, title, year })
+                post(`${apiBase}edit`, { id: book.id, title, year })
                     .then(resp => {
                         if (resp.success) {
                             overlay.remove();
@@ -94,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
             } else if (type === 'delete') {
-                post('/api/books/deleteBook.php', { id: book.id })
+                post(`${apiBase}delete`, { id: book.id })
                     .then(resp => {
                         if (resp.success) {
                             overlay.remove();
@@ -174,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const loadBooks = () => {
-        get(`/api/books/byAuthor.php?author_id=${authorId}`)
+        get(`${apiBase}getByAuthor&author_id=${authorId}`)
             .then(data => {
                 books = data.books || [];
                 render();

@@ -4,31 +4,27 @@ namespace BookStore\Response;
 
 class HtmlResponse extends Response
 {
-    /**
-     * @param string $body
-     * @param int $status_code
-     * @param array $headers
-     */
-    public function __construct(string $body = '', int $status_code = 200, array $headers = [])
-    {
-        parent::__construct($status_code, $headers, $body);
-        $this->headers['Content-Type'] = 'text/html';
-    }
+    protected array $params = [];
+
 
     /**
-     * Renders the HTML view and returns the response.
-     *
      * @param string $template
      * @param array $params
-     * @return HtmlResponse
+     * @param int $statusCode
+     * @param array $headers
      */
-    public static function view(string $template, array $params = []): HtmlResponse
+    public function __construct(string $template, array $params = [], int $statusCode = 200, array $headers = [])
     {
-        extract($params);
+        $this->params = $params;
+        $this->headers = $headers;
+        $this->headers['Content-Type'] = 'text/html';
+
         ob_start();
-        include __DIR__ . '/../../public/pages/' .$template . '.phtml';
+        extract($params);
+        include __DIR__ . '/../../public/pages/' . $template . '.phtml';
         $html = ob_get_clean();
 
-        return new self($html);
+        parent::__construct($statusCode, $this->headers, $html);
     }
+
 }

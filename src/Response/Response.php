@@ -2,21 +2,23 @@
 
 namespace BookStore\Response;
 
+use BookStore\Service\AuthorService;
+
 abstract class Response
 {
-    protected int $status_code;
+    protected int $statusCode;
     protected array $headers;
 
     protected string $body;
 
     /**
-     * @param int $status_code
+     * @param int $statusCode
      * @param array $headers
      * @param string $body
      */
-    public function __construct(int $status_code = 200, array $headers = [], string $body = '')
+    public function __construct(int $statusCode = 200, array $headers = [], string $body = '')
     {
-        $this->status_code = $status_code;
+        $this->statusCode = $statusCode;
         $this->headers = $headers;
         $this->body = $body;
     }
@@ -28,7 +30,7 @@ abstract class Response
      */
     public function send(): void
     {
-        http_response_code($this->status_code);
+        http_response_code($this->statusCode);
 
         foreach ($this->headers as $name => $value) {
             header("$name: $value");
@@ -36,4 +38,5 @@ abstract class Response
 
         echo $this->body;
     }
+
 }

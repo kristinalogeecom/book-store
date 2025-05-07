@@ -6,35 +6,35 @@ use BookStore\Repository\BookRepositoryInterface;
 
 class BookService
 {
-    private BookRepositoryInterface $book_repository;
+    private BookRepositoryInterface $bookRepository;
 
-    public function __construct(BookRepositoryInterface $book_repository)
+    public function __construct(BookRepositoryInterface $bookRepository)
     {
-        $this->book_repository = $book_repository;
+        $this->bookRepository = $bookRepository;
     }
 
-    public function get_by_author_id(int $author_id): array
+    public function getByAuthorId(int $authorId): array
     {
-        return $this->book_repository->get_by_author_id($author_id);
+        return $this->bookRepository->getByAuthorId($authorId);
     }
 
-    public function create_book(string $title, int $year, int $author_id): void
+    public function createBook(string $title, int $year, int $authorId): void
     {
-        $this->book_repository->create_book($title, $year, $author_id);
+        $this->bookRepository->createBook($title, $year, $authorId);
     }
 
-    public function edit_book(int $book_id, string $title, int $year): void
+    public function editBook(int $bookId, string $title, int $year): void
     {
-        $this->book_repository->edit_book($book_id, $title, $year);
+        $this->bookRepository->editBook($bookId, $title, $year);
     }
 
-    public function delete_book(int $book_id): void
+    public function deleteBook(int $bookId): void
     {
-        $this->book_repository->delete_book($book_id);
+        $this->bookRepository->deleteBook($bookId);
     }
 
-    public function get_book_by_id(int $book_id): ?array
+    public function getBookById(int $bookId): ?array
     {
-        return $this->book_repository->get_book_by_id($book_id);
+        return $this->bookRepository->getBookById($bookId);
     }
 }

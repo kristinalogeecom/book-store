@@ -3,8 +3,11 @@
 namespace BookStore\Infrastructure;
 
 use BookStore\Repository\AuthorRepositoryInterface;
+use BookStore\Repository\BookRepositoryInterface;
 use BookStore\Service\AuthorService;
+use BookStore\Service\BookService;
 use BookStore\Controller\AuthorController;
+use BookStore\Controller\BookController;
 
 class ServiceRegistry
 {
@@ -20,16 +23,25 @@ class ServiceRegistry
      *
      * @return void
      */
-    public function initialize_services(): void
+    public function initializeServices(): void
     {
-        $author_repository = $this->factory->create_author_repository('db');
-        $this->set(AuthorRepositoryInterface::class, $author_repository);
+        $authorRepository = $this->factory->createAuthorRepository('db');
+        $this->set(AuthorRepositoryInterface::class, $authorRepository);
 
-        $author_service = $this->factory->create_author_service($author_repository);
-        $this->set(AuthorService::class, $author_service);
+        $authorService = $this->factory->createAuthorService($authorRepository);
+        $this->set(AuthorService::class, $authorService);
 
-        $author_controller = $this->factory->create_author_controller($author_service);
-        $this->set(AuthorController::class, $author_controller);
+        $authorController = $this->factory->createAuthorController($authorService);
+        $this->set(AuthorController::class, $authorController);
+
+        $bookRepository = $this->factory->createBookRepository('session');
+        $this->set(BookRepositoryInterface::class, $bookRepository);
+
+        $bookService = $this->factory->createBookService($bookRepository);
+        $this->set(BookService::class, $bookService);
+
+        $bookController = $this->factory->createBookController($bookService);
+        $this->set(BookController::class, $bookController);
     }
 
     /**

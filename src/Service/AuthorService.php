@@ -31,46 +31,46 @@ class AuthorService
      */
     public function getAuthors(): array
     {
-        return $this->repository->get_all_authors();
+        return $this->repository->getAllAuthors();
     }
 
     /**
      * Create a new author.
      *
-     * @param string $first_name
-     * @param string $last_name
+     * @param string $firstName
+     * @param string $lastName
      * @return void
      * @throws Exception
      */
-    public function create_author(string $first_name, string $last_name): void
+    public function createAuthor(string $firstName, string $lastName): void
     {
-        $errors = $this->validate_author_data($first_name, $last_name);
+        $errors = $this->validateAuthorData($firstName, $lastName);
 
         if (!empty($errors)) {
             throw new Exception(json_encode($errors));
         }
 
-        $this->repository->create_author($first_name, $last_name);
+        $this->repository->createAuthor($firstName, $lastName);
     }
 
     /**
      * Edit an existing author.
      *
-     * @param int $author_id Author ID
-     * @param string $first_name
-     * @param string $last_name
+     * @param int $authorId Author ID
+     * @param string $firstName
+     * @param string $lastName
      * @return void
      * @throws Exception
      */
-    public function edit_author(int $author_id, string $first_name, string $last_name): void
+    public function editAuthor(int $authorId, string $firstName, string $lastName): void
     {
-        $errors = $this->validate_author_data($first_name, $last_name);
+        $errors = $this->validateAuthorData($firstName, $lastName);
 
         if (!empty($errors)) {
             throw new Exception(json_encode($errors));
         }
 
-        $this->repository->edit_author($author_id, $first_name, $last_name);
+        $this->repository->editAuthor($authorId, $firstName, $lastName);
     }
 
     /**
@@ -79,9 +79,9 @@ class AuthorService
      * @param int $id Author ID
      * @return array|null Author data or null if not found
      */
-    public function get_author_by_id(int $id): ?array
+    public function getAuthorById(int $id): ?array
     {
-        return $this->repository->get_author_by_id($id);
+        return $this->repository->getAuthorById($id);
     }
 
     /**
@@ -91,35 +91,35 @@ class AuthorService
      * @return void
      * @throws Exception
      */
-    public function delete_author(int $id): void
+    public function deleteAuthor(int $id): void
     {
-        $this->repository->delete_author($id);
+        $this->repository->deleteAuthor($id);
     }
 
     /**
      * Validate author data.
      *
-     * @param string $first_name
-     * @param string $last_name
+     * @param string $firstName
+     * @param string $lastName
      * @return array Validation errors
      */
-    private function validate_author_data(string $first_name, string $last_name): array
+    private function validateAuthorData(string $firstName, string $lastName): array
     {
         $errors = [];
 
-        if (empty($first_name)) {
+        if (empty($firstName)) {
             $errors['first_name'] = 'First name is required';
         }
 
-        if (empty($last_name)) {
+        if (empty($lastName)) {
             $errors['last_name'] = 'Last name is required';
         }
 
-        if (strlen($first_name) > 100) {
+        if (strlen($firstName) > 100) {
             $errors['first_name'] = 'First name cannot exceed 100 characters.';
         }
 
-        if (strlen($last_name) > 100) {
+        if (strlen($lastName) > 100) {
             $errors['last_name'] = 'Last name cannot exceed 100 characters.';
         }
 

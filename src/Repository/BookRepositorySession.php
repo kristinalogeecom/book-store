@@ -19,89 +19,89 @@ class BookRepositorySession implements BookRepositoryInterface
     }
 
     /**
-     * @param int $author_id
+     * @param int $authorId
      * @return array
      */
-    public function get_by_author_id(int $author_id): array
+    public function getByAuthorId(int $authorId): array
     {
-        $author_books = [];
+        $authorBooks = [];
         foreach ($_SESSION["books"] as $book) {
-            if (isset($book['author_id']) && $book['author_id'] === $author_id) {
-                $author_books[] = $book;
+            if (isset($book['author_id']) && $book['author_id'] === $authorId) {
+                $authorBooks[] = $book;
             }
         }
-        return $author_books;
+        return $authorBooks;
     }
 
     /**
-     * @param int $book_id
+     * @param int $bookId
      * @return array|null
      */
-    public function get_book_by_id(int $book_id): ?array
+    public function getBookById(int $bookId): ?array
     {
-        return $_SESSION['books'][$book_id] ?? null;
+        return $_SESSION['books'][$bookId] ?? null;
     }
 
     /**
      * @param string $title
      * @param int $year
-     * @param int $author_id
+     * @param int $authorId
      * @return void
      */
-    public function create_book(string $title, int $year, int $author_id): void
+    public function createBook(string $title, int $year, int $authorId): void
     {
-        $id = $this->generate_next_id();
+        $id = $this->generateNextId();
         $_SESSION['books'][$id] = [
             'id' => $id,
             'title' => $title,
             'year' => $year,
-            'author_id' => $author_id,
+            'author_id' => $authorId,
         ];
     }
 
     /**
-     * @param int $book_id
+     * @param int $bookId
      * @param string $title
      * @param int $year
      * @return void
      * @throws Exception
      */
-    public function edit_book(int $book_id, string $title, int $year): void
+    public function editBook(int $bookId, string $title, int $year): void
     {
-        if(!isset($_SESSION['books'][$book_id])) {
+        if(!isset($_SESSION['books'][$bookId])) {
             throw new Exception('Book not found');
         }
 
-        $_SESSION['books'][$book_id]['title'] = $title;
-        $_SESSION['books'][$book_id]['year'] = $year;
+        $_SESSION['books'][$bookId]['title'] = $title;
+        $_SESSION['books'][$bookId]['year'] = $year;
     }
 
     /**
-     * @param int $book_id
+     * @param int $bookId
      * @return void
      * @throws Exception
      */
-    public function delete_book(int $book_id): void
+    public function deleteBook(int $bookId): void
     {
-        if(!isset($_SESSION['books'][$book_id])) {
+        if(!isset($_SESSION['books'][$bookId])) {
             throw new Exception('Book not found');
         }
 
-        unset($_SESSION['books'][$book_id]);
+        unset($_SESSION['books'][$bookId]);
     }
 
-    public function delete_by_author_id(int $author_id): void
+    public function deleteByAuthorId(int $authorId): void
     {
-        $books_to_keep = [];
-        foreach ($_SESSION['books'] as $book_id => $book) {
-            if ($book['author_id'] !== $author_id) {
-                $books_to_keep[$book_id] = $book;
+        $booksToKeep = [];
+        foreach ($_SESSION['books'] as $bookId => $book) {
+            if ($book['author_id'] !== $authorId) {
+                $booksToKeep[$bookId] = $book;
             }
         }
-        $_SESSION['books'] = $books_to_keep;
+        $_SESSION['books'] = $booksToKeep;
     }
 
-    private function generate_next_id()
+    private function generateNextId()
     {
         if(empty($_SESSION['books'])) {
             return 1;

@@ -6,8 +6,12 @@ use BookStore\Database\DatabaseConnection;
 use BookStore\Repository\AuthorRepositoryInterface;
 use BookStore\Repository\AuthorRepository;
 use BookStore\Repository\AuthorRepositorySession;
+use BookStore\Repository\BookRepositoryInterface;
+use BookStore\Repository\BookRepositorySession;
 use BookStore\Service\AuthorService;
+use BookStore\Service\BookService;
 use BookStore\Controller\AuthorController;
+use BookStore\Controller\BookController;
 
 class Factory
 {
@@ -17,7 +21,7 @@ class Factory
      * @param string $type
      * @return AuthorRepositoryInterface
      */
-    public function create_author_repository(string $type = 'session'): AuthorRepositoryInterface
+    public function createAuthorRepository(string $type = 'session'): AuthorRepositoryInterface
     {
         if($type === 'session') {
             return new AuthorRepositorySession();
@@ -35,7 +39,7 @@ class Factory
      * @param AuthorRepository $repository
      * @return AuthorService
      */
-    public function create_author_service(AuthorRepositoryInterface $repository): AuthorService
+    public function createAuthorService(AuthorRepositoryInterface $repository): AuthorService
     {
         return new AuthorService($repository);
     }
@@ -46,8 +50,29 @@ class Factory
      * @param AuthorService $author_service
      * @return AuthorController
      */
-    public function create_author_controller(AuthorService $author_service): AuthorController
+    public function createAuthorController(AuthorService $author_service): AuthorController
     {
         return new AuthorController($author_service);
+    }
+
+    public function createBookRepository(string $type = 'session'): BookRepositoryInterface
+    {
+        // Za sada imamo samo session-based repo za knjige
+        if ($type === 'session') {
+            return new BookRepositorySession();
+        }
+
+        // Ako kasnije budeš pravio BookRepository za bazu podataka
+        throw new \InvalidArgumentException("Unknown book repository type: $type");
+    }
+
+    public function createBookService(BookRepositoryInterface $repository): BookService
+    {
+        return new BookService($repository);
+    }
+
+    public function createBookController(BookService $service): BookController
+    {
+        return new BookController($service);
     }
 }

@@ -18,7 +18,7 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      *
      * @return array
      */
-    public function get_all_authors(): array
+    public function getAllAuthors(): array
     {
         return array_values($_SESSION['authors']);
     }
@@ -26,64 +26,64 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
     /**
      * Create a new author.
      *
-     * @param string $first_name
-     * @param string $last_name
+     * @param string $firstName
+     * @param string $lastName
      * @return void
      */
-    public function create_author(string $first_name, string $last_name): void
+    public function createAuthor(string $firstName, string $lastName): void
     {
-        $id = $this->generate_next_id();
+        $id = $this->generateNextId();
         $_SESSION['authors'][$id] = [
             'id' => $id,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
         ];
     }
 
     /**
      * Edit an existing author.
      *
-     * @param int $author_id
-     * @param string $first_name
-     * @param string $last_name
+     * @param int $authorId
+     * @param string $firstName
+     * @param string $lastName
      * @return void
      * @throws Exception
      */
-    public function edit_author(int $author_id, string $first_name, string $last_name): void
+    public function editAuthor(int $authorId, string $firstName, string $lastName): void
     {
-        if(!isset($_SESSION['authors'][$author_id])) {
+        if(!isset($_SESSION['authors'][$authorId])) {
             throw new Exception('Author not found');
         }
 
-        $_SESSION['authors'][$author_id]['first_name'] = $first_name;
-        $_SESSION['authors'][$author_id]['last_name'] = $last_name;
+        $_SESSION['authors'][$authorId]['first_name'] = $firstName;
+        $_SESSION['authors'][$authorId]['last_name'] = $lastName;
     }
 
     /**
      * Delete an author by ID.
      *
-     * @param int $author_id
+     * @param int $authorId
      * @return void
      * @throws Exception
      */
-    public function delete_author(int $author_id): void
+    public function deleteAuthor(int $authorId): void
     {
-        if(!isset($_SESSION['authors'][$author_id])) {
+        if(!isset($_SESSION['authors'][$authorId])) {
             throw new Exception('Author not found');
         }
 
-        unset($_SESSION['authors'][$author_id]);
+        unset($_SESSION['authors'][$authorId]);
     }
 
     /**
      * Get an author by ID.
      *
-     * @param int $author_id
+     * @param int $authorId
      * @return array|null
      */
-    public function get_author_by_id(int $author_id): ?array
+    public function getAuthorById(int $authorId): ?array
     {
-        return $_SESSION['authors'][$author_id] ?? null;
+        return $_SESSION['authors'][$authorId] ?? null;
     }
 
     /**
@@ -91,7 +91,7 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      *
      * @return int
      */
-    private function generate_next_id(): int
+    private function generateNextId(): int
     {
         if(empty($_SESSION['authors'])) {
             return 1;

@@ -6,11 +6,11 @@ class RedirectResponse extends Response
 {
     /**
      * @param string $location
-     * @param int $status_code
+     * @param int $statusCode
      */
-    public function __construct(string $location, int $status_code = 302)
+    public function __construct(string $location, int $statusCode = 302)
     {
-        parent::__construct($status_code, ['Location' => $location], '');
+        parent::__construct($statusCode, ['Location' => $location], '');
     }
 
     /**
