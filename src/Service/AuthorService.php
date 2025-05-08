@@ -3,10 +3,9 @@
 namespace BookStore\Service;
 
 use BookStore\Repository\BookRepositoryInterface;
-use Exception;
 use BookStore\Repository\AuthorRepositoryInterface;
-use BookStore\Repository\BookRepositorySession;
 use BookStore\Models\Author;
+use Exception;
 
 
 class AuthorService

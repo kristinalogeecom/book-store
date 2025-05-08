@@ -4,6 +4,7 @@ namespace BookStore\Infrastructure;
 
 use BookStore\Database\DatabaseConnection;
 use BookStore\Repository\AuthorRepository;
+use BookStore\Repository\BookRepository;
 use BookStore\Repository\AuthorRepositoryInterface;
 use BookStore\Repository\BookRepositoryInterface;
 use BookStore\Repository\BookRepositorySession;
@@ -26,7 +27,7 @@ class ServiceRegistry
     {
         $pdo = DatabaseConnection::connect();
         self::set(AuthorRepositoryInterface::class, new AuthorRepository($pdo));
-        self::set(BookRepositoryInterface::class, new BookRepositorySession());
+        self::set(BookRepositoryInterface::class, new BookRepository($pdo));
 
         self::set(AuthorService::class, new AuthorService(self::get(AuthorRepositoryInterface::class), self::get(BookRepositoryInterface::class)));
 

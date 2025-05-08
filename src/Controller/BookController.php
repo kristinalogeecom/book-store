@@ -80,6 +80,8 @@ class BookController
             $book->setTitle($title);
             $book->setYear($year);
 
+            $this->bookService->editBook($book);
+
             return JsonResponse::json(['success' => true], 200);
         } catch (Exception $e) {
             return JsonResponse::json(['error' => $e->getMessage()], 500);
