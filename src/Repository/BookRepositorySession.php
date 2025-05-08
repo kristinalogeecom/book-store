@@ -2,20 +2,22 @@
 
 namespace BookStore\Repository;
 
+use BookStore\Infrastructure\Session;
 use Exception;
 
 class BookRepositorySession implements BookRepositoryInterface
 {
+    private Session $session;
+
 
     public function __construct()
     {
-        if (!isset($_SESSION)) {
-            session_start();
+        $this->session = Session::getInstance();
+
+        if($this->session->get('books') === null) {
+            $this->session->set('books', []);
         }
 
-        if (!isset($_SESSION["books"])){
-            $_SESSION["books"] = [];
-        }
     }
 
     /**
@@ -24,22 +26,15 @@ class BookRepositorySession implements BookRepositoryInterface
      */
     public function getByAuthorId(int $authorId): array
     {
+        $books = $this->session->get('books');
         $authorBooks = [];
-        foreach ($_SESSION["books"] as $book) {
+
+        foreach ($books as $book) {
             if (isset($book['author_id']) && $book['author_id'] === $authorId) {
                 $authorBooks[] = $book;
             }
         }
         return $authorBooks;
-    }
-
-    /**
-     * @param int $bookId
-     * @return array|null
-     */
-    public function getBookById(int $bookId): ?array
-    {
-        return $_SESSION['books'][$bookId] ?? null;
     }
 
     /**
@@ -50,13 +45,16 @@ class BookRepositorySession implements BookRepositoryInterface
      */
     public function createBook(string $title, int $year, int $authorId): void
     {
-        $id = $this->generateNextId();
-        $_SESSION['books'][$id] = [
+        $books = $this->session->get('books');
+        $id = $this->generateNextId($books);
+
+        $books[$id] = [
             'id' => $id,
             'title' => $title,
             'year' => $year,
             'author_id' => $authorId,
         ];
+        $this->session->set('books', $books);
     }
 
     /**
@@ -68,12 +66,16 @@ class BookRepositorySession implements BookRepositoryInterface
      */
     public function editBook(int $bookId, string $title, int $year): void
     {
-        if(!isset($_SESSION['books'][$bookId])) {
+        $books = $this->session->get('books');
+
+        if(!isset($books[$bookId])) {
             throw new Exception('Book not found');
         }
 
-        $_SESSION['books'][$bookId]['title'] = $title;
-        $_SESSION['books'][$bookId]['year'] = $year;
+        $books[$bookId]['title'] = $title;
+        $books[$bookId]['year'] = $year;
+
+        $this->session->set('books', $books);
     }
 
     /**
@@ -83,30 +85,60 @@ class BookRepositorySession implements BookRepositoryInterface
      */
     public function deleteBook(int $bookId): void
     {
-        if(!isset($_SESSION['books'][$bookId])) {
+        $books = $this->session->get('books');
+
+        if(!isset($books[$bookId])) {
             throw new Exception('Book not found');
         }
 
-        unset($_SESSION['books'][$bookId]);
+        unset($books[$bookId]);
+
+        $this->session->set('books', $books);
+    }
+
+
+    /**
+     * @param int $bookId
+     * @return array|null
+     */
+    public function getBookById(int $bookId): ?array
+    {
+        $books = $this->session->get('books');
+
+        return $books[$bookId] ?? null;
     }
 
     public function deleteByAuthorId(int $authorId): void
     {
+        $books = $this->session->get('books');
+
         $booksToKeep = [];
-        foreach ($_SESSION['books'] as $bookId => $book) {
+        foreach ($books as $bookId => $book) {
             if ($book['author_id'] !== $authorId) {
                 $booksToKeep[$bookId] = $book;
             }
         }
-        $_SESSION['books'] = $booksToKeep;
+        $this->session->set('books', $booksToKeep);
     }
 
-    private function generateNextId()
+    private function generateNextId(array $books): int
     {
-        if(empty($_SESSION['books'])) {
+        if(empty($books)) {
             return 1;
         }
 
-        return max(array_keys($_SESSION['books'])) + 1;
+        return max(array_keys($books)) + 1;
+    }
+
+    public function countByAuthorId(int $authorId): int
+    {
+        $books = $this->session->get('books');
+        $count = 0;
+        foreach ($books as $book) {
+            if ($book['author_id'] === $authorId) {
+                $count += 1;
+            }
+        }
+        return $count;
     }
 }

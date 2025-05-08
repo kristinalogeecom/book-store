@@ -2,8 +2,11 @@
 
 namespace BookStore\Infrastructure;
 
+use BookStore\Database\DatabaseConnection;
+use BookStore\Repository\AuthorRepository;
 use BookStore\Repository\AuthorRepositoryInterface;
 use BookStore\Repository\BookRepositoryInterface;
+use BookStore\Repository\BookRepositorySession;
 use BookStore\Service\AuthorService;
 use BookStore\Service\BookService;
 use BookStore\Controller\AuthorController;
@@ -11,37 +14,27 @@ use BookStore\Controller\BookController;
 
 class ServiceRegistry
 {
-    private array $services = [];
-    private Factory $factory;
-
-    public function __construct() {
-        $this->factory = new Factory();
-    }
+    private static array $services = [];
 
     /**
      * Initialize all services.
      *
      * @return void
+     * @throws \Exception
      */
-    public function initializeServices(): void
+    public static function initializeServices(): void
     {
-        $authorRepository = $this->factory->createAuthorRepository('db');
-        $this->set(AuthorRepositoryInterface::class, $authorRepository);
+        $pdo = DatabaseConnection::connect();
+        self::set(AuthorRepositoryInterface::class, new AuthorRepository($pdo));
+        self::set(BookRepositoryInterface::class, new BookRepositorySession());
 
-        $authorService = $this->factory->createAuthorService($authorRepository);
-        $this->set(AuthorService::class, $authorService);
+        self::set(AuthorService::class, new AuthorService(self::get(AuthorRepositoryInterface::class), self::get(BookRepositoryInterface::class)));
 
-        $authorController = $this->factory->createAuthorController($authorService);
-        $this->set(AuthorController::class, $authorController);
+        self::set(BookService::class, new BookService(self::get(BookRepositoryInterface::class)));
 
-        $bookRepository = $this->factory->createBookRepository('session');
-        $this->set(BookRepositoryInterface::class, $bookRepository);
+        self::set(AuthorController::class, new AuthorController(self::get(AuthorService::class)));
 
-        $bookService = $this->factory->createBookService($bookRepository);
-        $this->set(BookService::class, $bookService);
-
-        $bookController = $this->factory->createBookController($bookService);
-        $this->set(BookController::class, $bookController);
+        self::set(BookController::class, new BookController(self::get(BookService::class)));
     }
 
     /**
@@ -49,11 +42,12 @@ class ServiceRegistry
      *
      * @param string $key
      * @param object $service
+     *
      * @return void
      */
-    public function  set(string $key, object $service): void
+    public static function set(string $key, object $service): void
     {
-        $this->services[$key] = $service;
+        self::$services[$key] = $service;
     }
 
     /**
@@ -61,15 +55,17 @@ class ServiceRegistry
      * Returns the service from the registry
      *
      * @param string $key
+     *
      * @return object
+     * @throws \Exception
      */
-    public function get(string $key): object
+    public static function get(string $key): object
     {
-//        if (!isset($this->services[$key])) {
-//            $this->initialize_services();
-//        }
+        if (!isset(self::$services[$key])) {
+            throw new \Exception("Service '{$key}' not found");
+        }
 
-        return $this->services[$key];
+        return self::$services[$key];
     }
 
 }

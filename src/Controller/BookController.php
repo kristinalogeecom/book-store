@@ -2,8 +2,8 @@
 
 namespace BookStore\Controller;
 
+use BookStore\Response\Response;
 use BookStore\Response\JsonResponse;
-use BookStore\Response\HtmlResponse;
 use BookStore\Service\BookService;
 use Exception;
 
@@ -16,7 +16,7 @@ class BookController
         $this->bookService = $bookService;
     }
 
-    public function getByAuthorId(int $authorId): JsonResponse
+    public function getByAuthorId(int $authorId): Response
     {
         try {
             $books = $this->bookService->getByAuthorId($authorId);
@@ -26,7 +26,7 @@ class BookController
         }
     }
 
-    public function getBookById(int $bookId): JsonResponse
+    public function getBookById(int $bookId): Response
     {
         try {
             $book = $this->bookService->getBookById($bookId);
@@ -39,7 +39,7 @@ class BookController
         }
     }
 
-    public function createBook(string $title, int $year, int $authorId): JsonResponse
+    public function createBook(string $title, int $year, int $authorId): Response
     {
         try {
             $this->bookService->createBook($title, $year, $authorId);
@@ -49,7 +49,7 @@ class BookController
         }
     }
 
-    public function editBook(int $bookId, string $title, int $year): JsonResponse
+    public function editBook(int $bookId, string $title, int $year): Response
     {
         try {
             $this->bookService->editBook($bookId, $title, $year);
@@ -59,7 +59,7 @@ class BookController
         }
     }
 
-    public function deleteBook(int $bookId): JsonResponse
+    public function deleteBook(int $bookId): Response
     {
         try {
             $this->bookService->deleteBook($bookId);

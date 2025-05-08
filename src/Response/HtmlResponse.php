@@ -4,6 +4,7 @@ namespace BookStore\Response;
 
 class HtmlResponse extends Response
 {
+    protected string $template;
     protected array $params = [];
 
 
@@ -15,16 +16,25 @@ class HtmlResponse extends Response
      */
     public function __construct(string $template, array $params = [], int $statusCode = 200, array $headers = [])
     {
+        $this->template = $template;
         $this->params = $params;
-        $this->headers = $headers;
-        $this->headers['Content-Type'] = 'text/html';
+        parent::__construct($statusCode, $headers);
 
-        ob_start();
-        extract($params);
-        include __DIR__ . '/../../public/pages/' . $template . '.phtml';
-        $html = ob_get_clean();
-
-        parent::__construct($statusCode, $this->headers, $html);
+        if(!isset($this->headers['Content-Type'])) {
+            $this->headers['Content-Type'] = 'text/html';
+        }
     }
 
+    public function send(): void
+    {
+        $this->setCode();
+        $this->setHeaders();
+
+        ob_start();
+        extract($this->params);
+        include __DIR__ . '/../../public/pages/' . $this->template . '.phtml';
+        $content = ob_get_clean();
+
+        echo $content;
+    }
 }

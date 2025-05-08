@@ -47,6 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const submitBtn = document.createElement('button');
         submitBtn.textContent = type === 'edit' ? 'Save' : type === 'delete' ? 'Delete' : 'Create';
+        submitBtn.type = 'submit';
+        if (type === 'delete') {
+            submitBtn.classList.add('delete-submit');
+        }
+
 
         const backBtn = document.createElement('button');
         backBtn.textContent = 'Back';
@@ -119,33 +124,64 @@ document.addEventListener('DOMContentLoaded', () => {
         table.className = 'book-table';
 
         const thead = document.createElement('thead');
-        thead.innerHTML = '<tr><th>Book</th><th>Actions</th></tr>';
+        const headerRow = document.createElement('tr');
+
+        const bookHeader = document.createElement('th');
+        bookHeader.textContent = 'Book';
+
+        const actionsHeader = document.createElement('th');
+        actionsHeader.textContent = 'Actions';
+
+        headerRow.append(bookHeader, actionsHeader);
+        thead.appendChild(headerRow);
         table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
 
         books.forEach(book => {
+
             const row = document.createElement('tr');
 
             const titleCell = document.createElement('td');
-            titleCell.innerHTML = `<strong>${book.title}</strong> (${book.year})`;
+            const strong = document.createElement('strong');
+            strong.textContent = book.title;
+
+            const yearText = document.createTextNode(` (${book.year})`);
+
+            titleCell.appendChild(strong);
+            titleCell.appendChild(yearText);
 
             const actionsCell = document.createElement('td');
-            actionsCell.innerHTML = `
-                <button class="edit" data-id="${book.id}"><i class="fa-solid fa-pen-to-square edit-icon"></i></button>
-                <button class="delete" data-id="${book.id}"><i class="fa-solid fa-minus-circle delete-icon"></i></button>
-            `;
 
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit';
+            editBtn.dataset.id = book.id;
+
+            const editIcon = document.createElement('i');
+            editIcon.className = 'fa-solid fa-pen-to-square edit-icon';
+            editBtn.appendChild(editIcon);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete';
+            deleteBtn.dataset.id = book.id;
+
+            const deleteIcon = document.createElement('i');
+            deleteIcon.className = 'fa-solid fa-trash delete-icon';
+            deleteBtn.appendChild(deleteIcon);
+
+            actionsCell.append(editBtn, deleteBtn);
             row.append(titleCell, actionsCell);
             tbody.appendChild(row);
         });
 
         table.appendChild(tbody);
-        app.appendChild(table);
+        wrapper.appendChild(table);
+        app.appendChild(wrapper);
 
         document.querySelectorAll('.edit').forEach(btn => {
             btn.addEventListener('click', () => {
-                const id = btn.dataset.id;
+
+                const id = parseInt(btn.dataset.id);
                 const book = books.find(b => b.id === id);
                 const form = createForm(book, 'edit');
                 document.body.appendChild(form);
@@ -154,7 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelectorAll('.delete').forEach(btn => {
             btn.addEventListener('click', () => {
-                const id = btn.dataset.id;
+
+                const id = parseInt(btn.dataset.id);
                 const book = books.find(b => b.id === id);
                 const form = createForm(book, 'delete');
                 document.body.appendChild(form);
@@ -164,7 +201,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const addBtn = document.createElement('a');
         addBtn.className = 'add';
         addBtn.href = '#';
-        addBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+
+        const plusIcon = document.createElement('i');
+        plusIcon.className = 'fa-solid fa-plus';
+        addBtn.appendChild(plusIcon);
 
         addBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -176,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const loadBooks = () => {
+
         get(`${apiBase}getByAuthor&author_id=${authorId}`)
             .then(data => {
                 books = data.books || [];
@@ -184,4 +225,5 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     loadBooks();
+
 });

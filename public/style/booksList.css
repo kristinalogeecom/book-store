@@ -1,12 +1,105 @@
 body {
     font-family: Arial, sans-serif;
-    padding: 2rem;
     background-color: #fefefe;
+    padding: 2rem;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 80%;
+    margin: 40px auto;
+}
+
+th {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: normal;
+    color: #666;
+    border-bottom: 2px solid #dcdcdc;
+}
+
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid transparent;
+    vertical-align: middle;
+}
+
+th:nth-child(2),
+th:nth-child(3),
+td:nth-child(2),
+td:nth-child(3) {
+    text-align: right;
+}
+
+th:nth-child(2), td:nth-child(2) {
+    width: 10%;
+    text-align: center;
+}
+
+th:nth-child(3), td:nth-child(3) {
+    width: 12%;
+    text-align: right;
 }
 
 
+.book-title {
+    font-weight: normal;
+    color: #333;
+}
 
-/* Overlay background */
+button.edit,
+button.delete {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.edit-icon {
+    color: #4a90e2;
+}
+
+.delete-icon {
+    color: #e94e4e;
+}
+
+button.edit:hover .edit-icon {
+    color: #01579b;
+}
+
+button.delete:hover .delete-icon {
+    color: #b71c1c;
+}
+
+button.edit:focus,
+button.delete:focus {
+    outline: none;
+}
+
+.add {
+    display: block;
+    width: 80%;
+    margin: 20px 0 0 10%;
+    font-size: 30px;
+    color: #4a90e2;
+    background-color: white;
+    border-radius: 999px;
+    text-decoration: none;
+    text-align: left;
+}
+
+.table-wrapper::after {
+    content: "";
+    display: block;
+    height: 2px;
+    background: #dcdcdc;
+    width: 80%;
+    margin: 20px auto;
+}
+
 .overlay {
     position: fixed;
     top: 0;
@@ -20,7 +113,6 @@ body {
     z-index: 1000;
 }
 
-/* Form modal */
 .form-container {
     width: 280px;
     margin: 40px auto;
@@ -41,28 +133,6 @@ h2 {
     border-top: 1px solid #BEDCFE;
     margin: 10px 0 20px 0;
 }
-
-/* proveri */
-.table-wrapper {
-    border-top: 2px solid #dcdcdc;
-    border-bottom: 2px solid #dcdcdc;
-    padding: 10px 0;
-}
-
-th {
-    text-align: left;
-    padding: 10px 12px;
-    font-weight: normal;
-    color: #666;
-    border-bottom: 2px solid #dcdcdc;
-}
-
-td {
-    padding: 10px 12px;
-    border-bottom: 1px solid transparent;
-    vertical-align: middle;
-}
-
 
 label {
     display: block;
@@ -88,60 +158,49 @@ input[type="text"] {
     display: flex;
     justify-content: flex-end;
     margin-top: 10px;
-
 }
 
-button {
+button[type="submit"],
+.back-btn {
     padding: 8px 20px;
     font-size: 16px;
     font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button[type="submit"] {
     background-color: #64b5f6;
     color: white;
     border: none;
     border-radius: 6px;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
     width: auto;
 }
 
-button:hover {
+button[type="submit"]:hover {
     background-color: #42a5f5;
 }
 
 .back-btn {
     margin-left: 10px;
     background-color: #bdbdbd;
+    border: none;
+    color: white;
 }
 
 .back-btn:hover {
     background-color: #9e9e9e;
 }
 
-/* Table styling */
-.book-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+.delete-submit {
+    background-color: #e94e4e !important;
 }
 
-.book-table th, .book-table td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
+.delete-submit:hover {
+    background-color: #b71c1c !important;
 }
 
-.add {
-    display: inline-block;
-    width: 80%;
-    margin: 20px auto 0 auto;
-    font-size: 30px;
-    color: #4a90e2;
-    cursor: pointer;
-}
-
-.edit-icon {
-    color: #0288d1;
-}
-
-.delete-icon {
-    color: #d32f2f;
-}

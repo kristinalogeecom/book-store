@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -12,12 +10,28 @@ use BookStore\Controller\AuthorController;
 use BookStore\Controller\BookController;
 use BookStore\Infrastructure\ServiceRegistry;
 use BookStore\Response\JsonResponse;
+use BookStore\Infrastructure\Session;
 
-$registry = new ServiceRegistry();
-$registry->initializeServices();
 
-$authorController = $registry->get(AuthorController::class);
-$bookController = $registry->get(BookController::class);
+try {
+    ServiceRegistry::initializeServices();
+} catch (Exception $e) {
+
+}
+Session::getInstance();
+
+/** @var AuthorController $authorController */
+try {
+    $authorController = ServiceRegistry::get(AuthorController::class);
+} catch (Exception $e) {
+
+}
+/** @var BookController $bookController */
+try {
+    $bookController = ServiceRegistry::get(BookController::class);
+} catch (Exception $e) {
+
+}
 
 if (isset($_GET['api']) && $_GET['api'] === 'books') {
     header('Content-Type: application/json');

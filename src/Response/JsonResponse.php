@@ -11,9 +11,8 @@ class JsonResponse extends Response
      */
     public function __construct(mixed $data = [], int $statusCode = 200, array $headers = [])
     {
-        $body = json_encode($data);
         $headers['Content-Type'] = 'application/json';
-        parent::__construct($statusCode, $headers, $body);
+        parent::__construct($statusCode, $headers, $data);
     }
 
     /**
@@ -26,5 +25,13 @@ class JsonResponse extends Response
     public static function json(mixed $data = [], int $statusCode = 200): JsonResponse
     {
         return new self($data, $statusCode);
+    }
+
+    public function send(): void
+    {
+        $this->setCode();
+        $this->setHeaders();
+
+        echo json_encode($this->body);
     }
 }
