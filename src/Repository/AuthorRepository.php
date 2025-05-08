@@ -2,6 +2,7 @@
 
 namespace BookStore\Repository;
 
+use BookStore\Models\Author;
 use PDO;
 use Exception;
 
@@ -17,45 +18,55 @@ class AuthorRepository implements AuthorRepositoryInterface
     /**
      * Get all authors from database.
      *
-     * @return array List of authors
+     * @return Author[]
      */
     public function getAllAuthors(): array
     {
-        $query = "SELECT * FROM authors";
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute();
+        $stmt = $this->pdo->query("SELECT * FROM authors");
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $stmt->fetchAll();
+        $authors = [];
+        foreach ($rows as $row) {
+            $authors[] = new Author(
+                (int)$row['id'],
+                $row['first_name'],
+                $row['last_name']
+            );
+        }
+        return $authors;
     }
 
     /**
      * Create a new author.
      *
-     * @param $firstName
-     * @param $lastName
+     * @param Author $author
      * @return void
      */
-    public function createAuthor($firstName, $lastName): void
+    public function createAuthor(Author $author): void
     {
         $query = "INSERT INTO authors(first_name, last_name) VALUES(?, ?)";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$firstName, $lastName]);
+        $stmt->execute([
+            $author->getFirstName(),
+            $author->getLastName()
+        ]);
     }
 
     /**
      * Edit an existing author.
      *
-     * @param int $authorId Author ID
-     * @param string $firstName
-     * @param string $lastName
+     * @param Author $author
      * @return void
      * @throws Exception
      */
-    public function editAuthor(int $authorId, string $firstName, string $lastName): void
+    public function editAuthor(Author $author): void
     {
         $query = "UPDATE authors SET first_name = ?, last_name = ? WHERE id = ?";
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$firstName, $lastName, $authorId]);
+        $stmt->execute([$author->getFirstName(),
+            $author->getLastName(),
+            $author->getId()
+        ]);
 
         if ($stmt->rowCount() === 0) {
             throw new Exception('Author not found.');
@@ -84,16 +95,20 @@ class AuthorRepository implements AuthorRepositoryInterface
      * Get an author by ID.
      *
      * @param int $authorId Author ID
-     * @return array|null Author data or null if not found
+     * @return ?Author Author data or null if not found
      */
-    public function getAuthorById(int $authorId): ?array
+    public function getAuthorById(int $authorId): ?Author
     {
         $query = "SELECT * FROM authors WHERE id = ?";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$authorId]);
-        $author = $stmt->fetch();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $author ?: null;
+        return $row ? new Author(
+            (int)$row['id'],
+            $row['first_name'],
+            $row['last_name']
+        ) : null;
     }
 
 }

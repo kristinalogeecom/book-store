@@ -23,18 +23,18 @@
 
                 <td>
                     <i class="fa-solid fa-user author-icon"></i>
-                    <a href="../index.php?page=authorBooks&author_id=<?= $author['id'] ?>">
-                            <?= htmlspecialchars($author['first_name']) ?>
-                            <?= htmlspecialchars($author['last_name']) ?></a>
+                    <a href="../index.php?page=authorBooks&author_id=<?= $author->getId() ?>">
+                            <?= htmlspecialchars($author->getFirstName()) ?>
+                            <?= htmlspecialchars($author->getLastName()) ?></a>
                 </td>
 
-                <td> <span class="book-count">0</span> </td>
+                <td> <span class="book-count"><?= htmlspecialchars($author->getBookCount()) ?></span> </td>
 
                 <td class="actions">
-                    <a class="button edit" href="../index.php?page=editAuthor&id=<?= $author['id'] ?>">
+                    <a class="button edit" href="../index.php?page=editAuthor&id=<?= $author->getId() ?>">
                         <i class="fa-solid fa-pen-to-square"></i>
                     </a>
-                    <a class="button delete" href="../index.php?page=deleteAuthor&id=<?= $author['id'] ?>">
+                    <a class="button delete" href="../index.php?page=deleteAuthor&id=<?= $author->getId() ?>">
                         <i class="fa-solid fa-trash"></i>
                     </a>
                 </td>

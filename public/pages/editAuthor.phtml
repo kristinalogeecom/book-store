@@ -8,19 +8,19 @@
 <body>
 
 <div class="form-container">
-    <h2>Edit Author (ID: <?= htmlspecialchars($author['id']) ?>)</h2>
+    <h2>Edit Author (ID: <?= htmlspecialchars($author->getId())?>)</h2>
     <hr style="border: 1px solid #BEDCFE;">
     <form method="post" action="">
 
         <label for="first_name">First Name</label>
-        <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($author['first_name']) ?>">
+        <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($author->getFirst()) ?>">
 
         <?php if (!empty($errors['first_name'])): ?>
             <div class="error-msg" style="color: red;"><?= htmlspecialchars($errors['first_name']) ?></div>
         <?php endif; ?>
 
         <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($author['last_name']) ?>">
+        <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($author->getLastName()) ?>">
 
         <?php if (!empty($errors['last_name'])): ?>
             <div class="error-msg" style="color: red;"><?= htmlspecialchars($errors['last_name']) ?></div>

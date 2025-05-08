@@ -7,6 +7,7 @@ use BookStore\Response\RedirectResponse;
 use BookStore\Response\Response;
 use Exception;
 use BookStore\Service\AuthorService;
+use BookStore\Models\Author;
 
 class AuthorController
 {
@@ -51,8 +52,10 @@ class AuthorController
         $firstName = trim($_POST['first_name'] ?? '');
         $lastName = trim($_POST['last_name'] ?? '');
 
+        $author = new Author(0, $firstName, $lastName);
+
         try {
-            $this->authorService->createAuthor($firstName, $lastName);
+            $this->authorService->createAuthor($author);
 
             return RedirectResponse::to('index.php?page=authorsList');
 
@@ -101,17 +104,16 @@ class AuthorController
         $firstName = trim($_POST['first_name'] ?? '');
         $lastName = trim($_POST['last_name'] ?? '');
 
+        $author->setFirstName($firstName);
+        $author->setLastName($lastName);
+
         try {
-            $this->authorService->editAuthor($id, $firstName, $lastName);
+            $this->authorService->editAuthor($author);
             return RedirectResponse::to('index.php?page=authorsList');
         } catch (Exception $e) {
             $this->handleErrorMessages($e, $errors);
             return new HtmlResponse('editAuthor', [
-                'author' => [
-                    'id' => $id,
-                    'first_name' => $firstName,
-                    'last_name' => $lastName
-                ],
+                'author' => $author,
                 'errors' => $errors,
             ]);
         }

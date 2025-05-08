@@ -3,6 +3,7 @@
 namespace BookStore\Repository;
 
 use BookStore\Infrastructure\Session;
+use BookStore\Models\Author;
 use Exception;
 
 class AuthorRepositorySession implements AuthorRepositoryInterface
@@ -31,11 +32,10 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
     /**
      * Create a new author.
      *
-     * @param string $firstName
-     * @param string $lastName
+     * @param Author $author
      * @return void
      */
-    public function createAuthor(string $firstName, string $lastName): void
+    public function createAuthor(Author $author): void
     {
         $authors = $this->session->get('authors');
         $id = $this->generateNextId($authors);

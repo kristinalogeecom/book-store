@@ -3,6 +3,7 @@
 namespace BookStore\Service;
 
 use BookStore\Repository\BookRepositoryInterface;
+use BookStore\Models\Book;
 
 class BookService
 {
@@ -18,14 +19,14 @@ class BookService
         return $this->bookRepository->getByAuthorId($authorId);
     }
 
-    public function createBook(string $title, int $year, int $authorId): void
+    public function createBook(Book $book): void
     {
-        $this->bookRepository->createBook($title, $year, $authorId);
+        $this->bookRepository->createBook($book);
     }
 
-    public function editBook(int $bookId, string $title, int $year): void
+    public function editBook(Book $book): void
     {
-        $this->bookRepository->editBook($bookId, $title, $year);
+        $this->bookRepository->editBook($book);
     }
 
     public function deleteBook(int $bookId): void
@@ -33,7 +34,7 @@ class BookService
         $this->bookRepository->deleteBook($bookId);
     }
 
-    public function getBookById(int $bookId): ?array
+    public function getBookById(int $bookId): ?Book
     {
         return $this->bookRepository->getBookById($bookId);
     }

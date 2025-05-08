@@ -2,9 +2,11 @@
 
 namespace BookStore\Service;
 
+use BookStore\Repository\BookRepositoryInterface;
 use Exception;
 use BookStore\Repository\AuthorRepositoryInterface;
 use BookStore\Repository\BookRepositorySession;
+use BookStore\Models\Author;
 
 
 class AuthorService
@@ -15,13 +17,15 @@ class AuthorService
     private AuthorRepositoryInterface $repository;
     private BookRepositorySession $bookRepository;
 
+
     /**
      * @param AuthorRepositoryInterface $repository
+     * @param BookRepositoryInterface $bookRepository
      */
-    public function __construct(AuthorRepositoryInterface $repository)
+    public function __construct(AuthorRepositoryInterface $repository, BookRepositoryInterface $bookRepository)
     {
         $this->repository = $repository;
-     //   $this->bookRepository = new BookRepositorySession();
+        $this->bookRepository = $bookRepository;
     }
 
     /**
@@ -31,46 +35,47 @@ class AuthorService
      */
     public function getAuthors(): array
     {
-        return $this->repository->getAllAuthors();
+        $authors = $this->repository->getAllAuthors();
+        foreach ($authors as &$author) {
+            $author->setBookCount($this->bookRepository->countByAuthorId($author->getId()));
+        }
+        return $authors;
     }
 
     /**
      * Create a new author.
      *
-     * @param string $firstName
-     * @param string $lastName
+     * @param Author $author
      * @return void
      * @throws Exception
      */
-    public function createAuthor(string $firstName, string $lastName): void
+    public function createAuthor(Author $author): void
     {
-        $errors = $this->validateAuthorData($firstName, $lastName);
+        $errors = $this->validateAuthorData($author->getFirstName(), $author->getLastName());
 
         if (!empty($errors)) {
             throw new Exception(json_encode($errors));
         }
 
-        $this->repository->createAuthor($firstName, $lastName);
+        $this->repository->createAuthor($author);
     }
 
     /**
      * Edit an existing author.
      *
-     * @param int $authorId Author ID
-     * @param string $firstName
-     * @param string $lastName
+     * @param Author $author
      * @return void
      * @throws Exception
      */
-    public function editAuthor(int $authorId, string $firstName, string $lastName): void
+    public function editAuthor(Author $author): void
     {
-        $errors = $this->validateAuthorData($firstName, $lastName);
+        $errors = $this->validateAuthorData($author->getFirstName(), $author->getLastName());
 
         if (!empty($errors)) {
             throw new Exception(json_encode($errors));
         }
 
-        $this->repository->editAuthor($authorId, $firstName, $lastName);
+        $this->repository->editAuthor($author);
     }
 
     /**
@@ -79,7 +84,7 @@ class AuthorService
      * @param int $id Author ID
      * @return array|null Author data or null if not found
      */
-    public function getAuthorById(int $id): ?array
+    public function getAuthorById(int $id): ?Author
     {
         return $this->repository->getAuthorById($id);
     }
