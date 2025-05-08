@@ -40,33 +40,29 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
         $authors = $this->session->get('authors');
         $id = $this->generateNextId($authors);
 
-        $authors[$id] = [
-            'id' => $id,
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-        ];
+        $author->setId($id);
+        $authors[$id] = $author;
+
         $this->session->set('authors', $authors);
     }
 
     /**
      * Edit an existing author.
      *
-     * @param int $authorId
-     * @param string $firstName
-     * @param string $lastName
+     * @param Author $author
      * @return void
      * @throws Exception
      */
-    public function editAuthor(int $authorId, string $firstName, string $lastName): void
+    public function editAuthor(Author $author): void
     {
         $authors = $this->session->get('authors');
+        $id = $author->getId();
 
-        if(!isset($authors[$authorId])) {
+        if(!isset($authors[$id])) {
             throw new Exception('Author not found');
         }
 
-        $authors[$authorId]['first_name'] = $firstName;
-        $authors[$authorId]['last_name'] = $lastName;
+        $authors[$id] = $author;
 
         $this->session->set('authors', $authors);
     }
@@ -96,7 +92,7 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      * @param int $authorId
      * @return array|null
      */
-    public function getAuthorById(int $authorId): ?array
+    public function getAuthorById(int $authorId): ?Author
     {
         $authors = $this->session->get('authors');
         return $authors[$authorId] ?? null;

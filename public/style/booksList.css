@@ -4,11 +4,26 @@ body {
     padding: 2rem;
 }
 
+a.back {
+    display:block;
+    width: 80%;
+    margin: 0 auto;
+    text-align: left;
+    padding: 10px 0;
+    color: #4a90e2;
+    background-color: white;
+    text-decoration: none;
+}
+
+a.back i {
+    font-size: 30px;
+}
+
 table {
     border-collapse: separate;
     border-spacing: 0;
     width: 80%;
-    margin: 40px auto;
+    margin: 10px auto;
 }
 
 th {
@@ -33,7 +48,7 @@ td:nth-child(3) {
 }
 
 th:nth-child(2), td:nth-child(2) {
-    width: 10%;
+    width: 15%;
     text-align: center;
 }
 
@@ -41,7 +56,6 @@ th:nth-child(3), td:nth-child(3) {
     width: 12%;
     text-align: right;
 }
-
 
 .book-title {
     font-weight: normal;
@@ -81,7 +95,7 @@ button.delete:focus {
 
 .add {
     display: block;
-    width: 80%;
+    width: 5%;
     margin: 20px 0 0 10%;
     font-size: 30px;
     color: #4a90e2;

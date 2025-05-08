@@ -117,6 +117,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const render = () => {
         app.innerHTML = '';
 
+        const backBtn = document.createElement('a');
+        backBtn.className = 'back';
+        backBtn.href = 'index.php?page=authorsList';
+
+        const backIcon = document.createElement('i');
+        backIcon.className = 'fa-solid fa-arrow-left';
+        backBtn.appendChild(backIcon);
+
+        app.appendChild(backBtn);
+
         const wrapper = document.createElement('div');
         wrapper.className = 'table-wrapper';
 
@@ -180,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelectorAll('.edit').forEach(btn => {
             btn.addEventListener('click', () => {
-
                 const id = parseInt(btn.dataset.id);
                 const book = books.find(b => b.id === id);
                 const form = createForm(book, 'edit');
@@ -190,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelectorAll('.delete').forEach(btn => {
             btn.addEventListener('click', () => {
-
                 const id = parseInt(btn.dataset.id);
                 const book = books.find(b => b.id === id);
                 const form = createForm(book, 'delete');
@@ -214,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         app.appendChild(addBtn);
     };
+
 
     const loadBooks = () => {
 

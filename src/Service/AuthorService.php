@@ -15,7 +15,7 @@ class AuthorService
      * @var AuthorRepositoryInterface
      */
     private AuthorRepositoryInterface $repository;
-    private BookRepositorySession $bookRepository;
+    private BookRepositoryInterface $bookRepository;
 
 
     /**
@@ -36,7 +36,7 @@ class AuthorService
     public function getAuthors(): array
     {
         $authors = $this->repository->getAllAuthors();
-        foreach ($authors as &$author) {
+        foreach ($authors as $author) {
             $author->setBookCount($this->bookRepository->countByAuthorId($author->getId()));
         }
         return $authors;
