@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.classList.add('delete-submit');
         }
 
-
         const backBtn = document.createElement('button');
         backBtn.textContent = 'Back';
         backBtn.type = 'button';
@@ -78,35 +77,50 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const title = titleInput.value.trim();
             const year = parseInt(yearInput.value);
-
-            if (type !== 'delete' && (!title || isNaN(year))) {
-                error.textContent = 'Please fill in all fields correctly.';
-                return;
-            }
+            //
+            // if (type !== 'delete' && (!title || isNaN(year))) {
+            //     error.textContent = 'Please fill in all fields correctly.';
+            //     return;
+            // }
 
             if (type === 'create') {
                 post(`${apiBase}create`, { author_id: authorId, title, year })
                     .then(resp => {
-                        if (resp.success) {
+                        if (resp && resp.success) {
                             overlay.remove();
                             loadBooks();
+                        } else {
+                            window.location.href = '/pages/error.phtml?msg=';
                         }
-                    });
+                    })
+                    .catch(() => {
+                        window.location.href = '/pages/error.phtml?msg=';
+                    })
             } else if (type === 'edit') {
                 post(`${apiBase}edit`, { id: book.id, title, year })
                     .then(resp => {
-                        if (resp.success) {
+                        if (resp && resp.success) {
                             overlay.remove();
                             loadBooks();
+                        } else {
+                            window.location.href = '/pages/error.phtml?msg=';
                         }
+                    })
+                    .catch(() => {
+                        window.location.href = '/pages/error.phtml?msg=';
                     });
             } else if (type === 'delete') {
                 post(`${apiBase}delete`, { id: book.id })
                     .then(resp => {
-                        if (resp.success) {
+                        if (resp && resp.success) {
                             overlay.remove();
                             loadBooks();
+                        } else {
+                            window.location.href = '/pages/error.phtml?msg=';
                         }
+                    })
+                    .catch(() => {
+                        window.location.href = '/pages/error.phtml?msg=';
                     });
             }
         });

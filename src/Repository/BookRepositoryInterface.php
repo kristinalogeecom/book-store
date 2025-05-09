@@ -13,6 +13,4 @@ interface BookRepositoryInterface
     public function deleteBook(int $bookId): void;
     public function deleteByAuthorId(int $authorId): void;
 
-    public function countByAuthorId(int $authorId): int;
-
 }

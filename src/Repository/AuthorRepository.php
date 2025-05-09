@@ -2,18 +2,13 @@
 
 namespace BookStore\Repository;
 
+use BookStore\Database\DatabaseConnection;
 use BookStore\Models\Author;
 use PDO;
 use Exception;
 
 class AuthorRepository implements AuthorRepositoryInterface
 {
-    private PDO $pdo;
-
-    public function __construct(PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
 
     /**
      * Get all authors from database.
@@ -22,16 +17,24 @@ class AuthorRepository implements AuthorRepositoryInterface
      */
     public function getAllAuthors(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM authors");
+        $sql = "SELECT a.id, a.first_name, a.last_name, COUNT(b.id) AS book_count
+FROM authors a 
+LEFT JOIN books b ON a.id = b.author_id
+GROUP BY a.id, a.first_name, a.last_name";
+
+        $stmt = DatabaseConnection::connect()->query($sql);
+
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $authors = [];
         foreach ($rows as $row) {
-            $authors[] = new Author(
+            $author = new Author(
                 (int)$row['id'],
                 $row['first_name'],
                 $row['last_name']
             );
+            $author->setBookCount((int)$row['book_count']);
+            $authors[] = $author;
         }
         return $authors;
     }
@@ -45,7 +48,7 @@ class AuthorRepository implements AuthorRepositoryInterface
     public function createAuthor(Author $author): void
     {
         $query = "INSERT INTO authors(first_name, last_name) VALUES(?, ?)";
-        $stmt = $this->pdo->prepare($query);
+        $stmt = DatabaseConnection::connect()->prepare($query);
         $stmt->execute([
             $author->getFirstName(),
             $author->getLastName()
@@ -62,7 +65,7 @@ class AuthorRepository implements AuthorRepositoryInterface
     public function editAuthor(Author $author): void
     {
         $query = "UPDATE authors SET first_name = ?, last_name = ? WHERE id = ?";
-        $stmt = $this->pdo->prepare($query);
+        $stmt = DatabaseConnection::connect()->prepare($query);
         $stmt->execute([$author->getFirstName(),
             $author->getLastName(),
             $author->getId()
@@ -83,7 +86,7 @@ class AuthorRepository implements AuthorRepositoryInterface
     public function deleteAuthor(int $authorId): void
     {
         $query = "DELETE FROM authors WHERE id = ?";
-        $stmt = $this->pdo->prepare($query);
+        $stmt = DatabaseConnection::connect()->prepare($query);
         $stmt->execute([$authorId]);
 
         if ($stmt->rowCount() === 0) {
@@ -100,7 +103,7 @@ class AuthorRepository implements AuthorRepositoryInterface
     public function getAuthorById(int $authorId): ?Author
     {
         $query = "SELECT * FROM authors WHERE id = ?";
-        $stmt = $this->pdo->prepare($query);
+        $stmt = DatabaseConnection::connect()->prepare($query);
         $stmt->execute([$authorId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 

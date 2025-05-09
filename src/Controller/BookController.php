@@ -2,6 +2,7 @@
 
 namespace BookStore\Controller;
 
+use BookStore\Response\RedirectResponse;
 use BookStore\Response\Response;
 use BookStore\Response\JsonResponse;
 use BookStore\Service\BookService;
@@ -32,8 +33,8 @@ class BookController
             }, $books);
 
             return JsonResponse::json(['books' => $booksData]);
-        } catch (Exception $ex) {
-            return JsonResponse::json(['error' => $ex->getMessage()], 500);
+        } catch (Exception $e) {
+            return RedirectResponse::to('/pages/error.phtml?msg=' . urlencode($e->getMessage()));
         }
     }
 
@@ -53,7 +54,7 @@ class BookController
                 ]
             ]);
         } catch (Exception $e) {
-            return JsonResponse::json(['error' => $e->getMessage()], 500);
+            return RedirectResponse::to('/pages/error.phtml?msg=' . urlencode($e->getMessage()));
         }
     }
 
@@ -64,7 +65,7 @@ class BookController
             $this->bookService->createBook($book);
             return JsonResponse::json(['success' => true], 201);
         } catch (Exception $e) {
-            return JsonResponse::json(['error' => $e->getMessage()], 500);
+            return RedirectResponse::to('/pages/error.phtml?msg=' . urlencode($e->getMessage()));
         }
     }
 
@@ -77,6 +78,12 @@ class BookController
                 return JsonResponse::json(['error' => 'Book not found'], 404);
             }
 
+            $errors = $this->bookService->validateBookData($title, $year);
+
+            if (!empty($errors)) {
+                throw new Exception(implode(' ', $errors));
+            }
+
             $book->setTitle($title);
             $book->setYear($year);
 
@@ -84,7 +91,7 @@ class BookController
 
             return JsonResponse::json(['success' => true], 200);
         } catch (Exception $e) {
-            return JsonResponse::json(['error' => $e->getMessage()], 500);
+            return RedirectResponse::to('/pages/error.phtml?msg=' . urlencode($e->getMessage()));
         }
     }
 
@@ -94,7 +101,7 @@ class BookController
             $this->bookService->deleteBook($bookId);
             return JsonResponse::json(['success' => true], 200);
         } catch (Exception $e) {
-            return JsonResponse::json(['error' => $e->getMessage()], 500);
+            return RedirectResponse::to('/pages/error.phtml?msg=' . urlencode($e->getMessage()));
         }
     }
 

@@ -4,18 +4,16 @@ namespace BookStore\Repository;
 
 use BookStore\Infrastructure\Session;
 use BookStore\Models\Author;
+use BookStore\Models\Book;
 use Exception;
 
 class AuthorRepositorySession implements AuthorRepositoryInterface
 {
-    private Session $session;
 
     public function __construct()
     {
-       $this->session = Session::getInstance();
-
-       if(!$this->session->get('authors')) {
-           $this->session->set('authors', []);
+       if(!Session::getInstance()->get('authors')) {
+           Session::getInstance()->set('authors', []);
        }
     }
 
@@ -26,7 +24,20 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      */
     public function getAllAuthors(): array
     {
-        return array_values($this->session->get('authors'));
+        $session = Session::getInstance();
+
+        /** @var Author[] $authors */
+        $authors = $session->get('authors') ?? [];
+        $books = $session->get('books') ?? [];
+
+        foreach ($authors as $author) {
+            $authorBooks = array_filter($books, function ($book) use ($author) {
+                return $book->getAuthorId() === $author->getId();
+            });
+            $author->setBookCount(count($authorBooks));
+        }
+
+        return array_values($authors);
     }
 
     /**
@@ -37,13 +48,13 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      */
     public function createAuthor(Author $author): void
     {
-        $authors = $this->session->get('authors');
+        $authors = Session::getInstance()->get('authors');
         $id = $this->generateNextId($authors);
 
         $author->setId($id);
         $authors[$id] = $author;
 
-        $this->session->set('authors', $authors);
+        Session::getInstance()->set('authors', $authors);
     }
 
     /**
@@ -55,7 +66,7 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      */
     public function editAuthor(Author $author): void
     {
-        $authors = $this->session->get('authors');
+        $authors = Session::getInstance()->get('authors');
         $id = $author->getId();
 
         if(!isset($authors[$id])) {
@@ -64,7 +75,7 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
 
         $authors[$id] = $author;
 
-        $this->session->set('authors', $authors);
+        Session::getInstance()->set('authors', $authors);
     }
 
     /**
@@ -76,14 +87,23 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      */
     public function deleteAuthor(int $authorId): void
     {
-        $authors = $this->session->get('authors');
+        $authors = Session::getInstance()->get('authors') ?? [];
 
         if(!isset($authors[$authorId])) {
             throw new Exception('Author not found');
         }
 
         unset($authors[$authorId]);
-        $this->session->set('authors', $authors);
+        Session::getInstance()->set('authors', $authors);
+
+        $books = Session::getInstance()->get('books') ?? [];
+        $books = array_filter($books, function ($book) use ($authorId) {
+
+            return $book->getAuthorId() !== $authorId;
+        });
+
+        Session::getInstance()->set('books', $books);
+
     }
 
     /**
@@ -94,7 +114,7 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      */
     public function getAuthorById(int $authorId): ?Author
     {
-        $authors = $this->session->get('authors');
+        $authors = Session::getInstance()->get('authors');
         return $authors[$authorId] ?? null;
     }
 
@@ -103,7 +123,7 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      *
      * @return int
      */
-    private function generateNextId(): int
+    private function generateNextId(array $authors): int
     {
         if(empty($authors)) {
             return 1;

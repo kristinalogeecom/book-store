@@ -2,7 +2,6 @@
 
 namespace BookStore\Service;
 
-use BookStore\Repository\BookRepositoryInterface;
 use BookStore\Repository\AuthorRepositoryInterface;
 use BookStore\Models\Author;
 use Exception;
@@ -14,17 +13,13 @@ class AuthorService
      * @var AuthorRepositoryInterface
      */
     private AuthorRepositoryInterface $repository;
-    private BookRepositoryInterface $bookRepository;
-
 
     /**
      * @param AuthorRepositoryInterface $repository
-     * @param BookRepositoryInterface $bookRepository
      */
-    public function __construct(AuthorRepositoryInterface $repository, BookRepositoryInterface $bookRepository)
+    public function __construct(AuthorRepositoryInterface $repository)
     {
         $this->repository = $repository;
-        $this->bookRepository = $bookRepository;
     }
 
     /**
@@ -34,11 +29,7 @@ class AuthorService
      */
     public function getAuthors(): array
     {
-        $authors = $this->repository->getAllAuthors();
-        foreach ($authors as $author) {
-            $author->setBookCount($this->bookRepository->countByAuthorId($author->getId()));
-        }
-        return $authors;
+        return $this->repository->getAllAuthors();
     }
 
     /**

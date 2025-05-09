@@ -105,3 +105,9 @@ try {
 } catch (Exception $e) {
     echo "An unexpected error occurred: " . htmlspecialchars($e->getMessage());
 }
+
+//echo '<pre>';
+//var_dump($_SESSION['authors'] ?? 'Nema autora');
+//var_dump($_SESSION['books'] ?? 'Nema knjiga');
+//echo '</pre>';
+

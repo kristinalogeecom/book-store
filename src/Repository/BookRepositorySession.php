@@ -10,7 +10,6 @@ class BookRepositorySession implements BookRepositoryInterface
 {
     private Session $session;
 
-
     public function __construct()
     {
         $this->session = Session::getInstance();
