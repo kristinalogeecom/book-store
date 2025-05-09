@@ -5,7 +5,7 @@ body {
 }
 
 a.back {
-    display:block;
+    display: block;
     width: 80%;
     margin: 0 auto;
     text-align: left;
@@ -120,7 +120,7 @@ button.delete:focus {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -166,6 +166,13 @@ input[type="text"] {
     color: red;
     font-size: 13px;
     margin-top: 4px;
+}
+
+.empty-message {
+    text-align: center;
+    font-style: italic;
+    color: #888;
+    margin-top: 20px;
 }
 
 .btn-wrapper {

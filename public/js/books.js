@@ -1,4 +1,4 @@
-import { get, post } from './ajax.js';
+import {get, post} from './ajax.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('bookApp');
@@ -77,50 +77,47 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const title = titleInput.value.trim();
             const year = parseInt(yearInput.value);
-            //
-            // if (type !== 'delete' && (!title || isNaN(year))) {
-            //     error.textContent = 'Please fill in all fields correctly.';
-            //     return;
-            // }
 
             if (type === 'create') {
-                post(`${apiBase}create`, { author_id: authorId, title, year })
+                post(`${apiBase}create`, {author_id: authorId, title, year})
                     .then(resp => {
                         if (resp && resp.success) {
                             overlay.remove();
                             loadBooks();
                         } else {
-                            window.location.href = '/pages/error.phtml?msg=';
+                            window.location.href = `/index.php?page=error&msg=${encodeURIComponent(resp?.error || 'Error processing the request')}`;
+
                         }
                     })
                     .catch(() => {
-                        window.location.href = '/pages/error.phtml?msg=';
+                        window.location.href = '/index.php?page=error&msg=Network error during creation';
+
                     })
             } else if (type === 'edit') {
-                post(`${apiBase}edit`, { id: book.id, title, year })
+                post(`${apiBase}edit`, {id: book.id, title, year})
                     .then(resp => {
                         if (resp && resp.success) {
                             overlay.remove();
                             loadBooks();
                         } else {
-                            window.location.href = '/pages/error.phtml?msg=';
+                            window.location.href = `/index.php?page=error&msg=${encodeURIComponent(resp.error || 'Error while editing')}`;
                         }
                     })
                     .catch(() => {
-                        window.location.href = '/pages/error.phtml?msg=';
+                        window.location.href = '/index.php?page=error&msg=Network error while editing';
                     });
             } else if (type === 'delete') {
-                post(`${apiBase}delete`, { id: book.id })
+                post(`${apiBase}delete`, {id: book.id})
                     .then(resp => {
                         if (resp && resp.success) {
                             overlay.remove();
                             loadBooks();
                         } else {
-                            window.location.href = '/pages/error.phtml?msg=';
+                            window.location.href = `/index.php?page=error&msg=${encodeURIComponent(resp.error || 'Error while deleting')}`;
                         }
                     })
                     .catch(() => {
-                        window.location.href = '/pages/error.phtml?msg=';
+                        window.location.href = '/index.php?page=error&msg=Network error while deleting';
                     });
             }
         });
@@ -155,6 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const actionsHeader = document.createElement('th');
         actionsHeader.textContent = 'Actions';
+
+        const emptyMsg = document.createElement('p');
+        emptyMsg.className = 'empty-message';
+        emptyMsg.textContent = 'This author does not have any published books yet.';
 
         headerRow.append(bookHeader, actionsHeader);
         thead.appendChild(headerRow);
@@ -197,6 +198,13 @@ document.addEventListener('DOMContentLoaded', () => {
             row.append(titleCell, actionsCell);
             tbody.appendChild(row);
         });
+
+        if (books.length === 0) {
+            const emptyMsg = document.createElement('p');
+            emptyMsg.className = 'empty-message';
+            emptyMsg.textContent = 'This author does not have any published books yet.';
+            wrapper.appendChild(emptyMsg);
+        }
 
         table.appendChild(tbody);
         wrapper.appendChild(table);

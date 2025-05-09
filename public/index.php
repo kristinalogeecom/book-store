@@ -1,36 +1,29 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use BookStore\Controller\AuthorController;
-use BookStore\Controller\BookController;
-use BookStore\Infrastructure\ServiceRegistry;
-use BookStore\Response\JsonResponse;
-use BookStore\Infrastructure\Session;
-
+use BookStore\Application\Presentation\Controller\AuthorController;
+use BookStore\Application\Presentation\Controller\BookController;
+use BookStore\Infrastructure\Container\ServiceRegistry;
+use BookStore\Infrastructure\Session\Session;
+use BookStore\Infrastructure\Response\JsonResponse;
 
 try {
     ServiceRegistry::initializeServices();
+    Session::getInstance();
 } catch (Exception $e) {
-
+    JsonResponse::json(['error' => 'Failed to initialize services'], 500)->send();
+    exit;
 }
-Session::getInstance();
 
 /** @var AuthorController $authorController */
-try {
-    $authorController = ServiceRegistry::get(AuthorController::class);
-} catch (Exception $e) {
-
-}
 /** @var BookController $bookController */
 try {
+    $authorController = ServiceRegistry::get(AuthorController::class);
     $bookController = ServiceRegistry::get(BookController::class);
 } catch (Exception $e) {
-
+    JsonResponse::json(['error' => 'Failed to load controllers'], 500)->send();
+    exit;
 }
 
 if (isset($_GET['api']) && $_GET['api'] === 'books') {
@@ -39,11 +32,12 @@ if (isset($_GET['api']) && $_GET['api'] === 'books') {
     $method = $_SERVER['REQUEST_METHOD'];
     $data = json_decode(file_get_contents('php://input'), true) ?? [];
 
+    $action = $_GET['action'] ?? '';
     $authorId = $_GET['author_id'] ?? $data['author_id'] ?? null;
     $bookId = $_GET['book_id'] ?? $data['id'] ?? null;
 
     try {
-        switch ($_GET['action'] ?? '') {
+        switch ($action) {
             case 'getByAuthor':
                 $bookController->getByAuthorId((int)$authorId)->send();
                 break;
@@ -73,10 +67,8 @@ if (isset($_GET['api']) && $_GET['api'] === 'books') {
     } catch (Exception $e) {
         JsonResponse::json(['error' => $e->getMessage()], 500)->send();
     }
-
     exit;
 }
-
 
 $page = $_GET['page'] ?? 'authorsList';
 
@@ -89,25 +81,23 @@ try {
             $authorController->createAuthor()->send();
             break;
         case 'editAuthor':
-            $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-            $authorController->editAuthor($id)->send();
-            break;
         case 'deleteAuthor':
-            $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-            $authorController->deleteAuthor($id)->send();
+            $id = (int)($_GET['id'] ?? 0);
+            if ($page === 'editAuthor') {
+                $authorController->editAuthor($id)->send();
+            } else {
+                $authorController->deleteAuthor($id)->send();
+            }
             break;
         case 'authorBooks':
-            include __DIR__ . '/pages/authorBooks.html';
+            include __DIR__ . '../../src/Application/Presentation/Pages/authorBooks.html';
+            break;
+        case 'error':
+            include __DIR__ . '/../src/Application/Presentation/Pages/error.phtml';
             break;
         default:
             echo "404 - Page not found";
     }
 } catch (Exception $e) {
-    echo "An unexpected error occurred: " . htmlspecialchars($e->getMessage());
+    JsonResponse::json(['error' => $e->getMessage()], 500)->send();
 }
-
-//echo '<pre>';
-//var_dump($_SESSION['authors'] ?? 'Nema autora');
-//var_dump($_SESSION['books'] ?? 'Nema knjiga');
-//echo '</pre>';
-

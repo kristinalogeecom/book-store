@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Delete Confirmation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="/style/deleteAuthor.css">
+</head>
+<body>
+
+<form method="post">
+    <div class="dialog">
+        <h2><span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>Delete Author</h2>
+
+        <p>
+            You are about to delete the author
+            '<?= htmlspecialchars($author->getFirstName() . " " . $author->getLastName()) ?>'.
+            If you proceed with this action, application will permanently delete all books related to this author.
+        </p>
+
+        <div class="actions">
+            <button type="submit" name="confirm" class="delete-btn">Delete</button>
+            <button type="button" class="cancel-btn" onclick="window.location.href='index.php?page=authorsList'">
+                Cancel
+            </button>
+        </div>
+
+    </div>
+</form>
+
+</body>
+</html>
