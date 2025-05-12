@@ -8,18 +8,20 @@ abstract class Response
     protected int $statusCode;
     protected array $headers;
 
-    protected array $body;
-
     /**
      * @param int $statusCode
      * @param array $headers
-     * @param array $body
      */
-    public function __construct(int $statusCode = 200, array $headers = [], array $body = [])
+    public function __construct(int $statusCode = 200, array $headers = [])
     {
         $this->statusCode = $statusCode;
         $this->headers = $headers;
-        $this->body = $body;
+    }
+
+    public function send(): void
+    {
+        $this->setCode();
+        $this->setHeaders();
     }
 
     protected function setCode(): void
@@ -33,12 +35,4 @@ abstract class Response
             header("$name: $value");
         }
     }
-
-    /**
-     * Sends the response headers and body to the client.
-     *
-     * @return void
-     */
-    abstract public function send(): void;
-
 }

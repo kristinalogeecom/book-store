@@ -23,11 +23,9 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      */
     public function getAllAuthors(): array
     {
-        $session = Session::getInstance();
-
         /** @var Author[] $authors */
-        $authors = $session->get('authors') ?? [];
-        $books = $session->get('books') ?? [];
+        $authors = Session::getInstance()->get('authors') ?? [];
+        $books = Session::getInstance()->get('books') ?? [];
 
         foreach ($authors as $author) {
             $authorBooks = array_filter($books, function ($book) use ($author) {

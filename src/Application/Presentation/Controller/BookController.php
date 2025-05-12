@@ -3,20 +3,23 @@
 namespace BookStore\Application\Presentation\Controller;
 
 use BookStore\Application\BusinessLogic\Models\Book;
+use BookStore\Application\BusinessLogic\ServiceInterfaces\BookServiceInterface;
 use BookStore\Infrastructure\Response\RedirectResponse;
 use BookStore\Infrastructure\Response\JsonResponse;
 use BookStore\Infrastructure\Response\Response;
-use BookStore\Application\BusinessLogic\Service\BookService;
 use Exception;
 
 class BookController
 {
-    private BookService $bookService;
+    /**
+     * @var BookServiceInterface
+     */
+    private BookServiceInterface $bookService;
 
     /**
-     * @param BookService $bookService
+     * @param BookServiceInterface $bookService
      */
-    public function __construct(BookService $bookService)
+    public function __construct(BookServiceInterface $bookService)
     {
         $this->bookService = $bookService;
     }
@@ -41,10 +44,10 @@ class BookController
                 ];
             }, $books);
 
-            return JsonResponse::json(['books' => $booksData]);
+            return new JsonResponse(['books' => $booksData]);
         } catch (Exception $e) {
 
-            return RedirectResponse::to('/Pages/error.phtml?msg=' . urlencode($e->getMessage()));
+            return new RedirectResponse('/index.php?page=error&msg=' . urlencode($e->getMessage()));
         }
     }
 
@@ -59,9 +62,9 @@ class BookController
         try {
             $book = $this->bookService->getBookById($bookId);
             if (!$book) {
-                return JsonResponse::json(['error' => 'Book not found'], 404);
+                return new JsonResponse(['error' => 'Book not found'], 404);
             }
-            return JsonResponse::json([
+            return new JsonResponse([
                 'book' => [
                     'id' => $book->getId(),
                     'title' => $book->getTitle(),
@@ -71,7 +74,7 @@ class BookController
             ]);
         } catch (Exception $e) {
 
-            return RedirectResponse::to('/Pages/error.phtml?msg=' . urlencode($e->getMessage()));
+            return new RedirectResponse('/index.php?page=error&msg=' . urlencode($e->getMessage()));
         }
     }
 
@@ -88,10 +91,10 @@ class BookController
         try {
             $book = new Book(0, $title, $year, $authorId);
             $this->bookService->createBook($book);
-            return JsonResponse::json(['success' => true], 201);
+            return new JsonResponse(['success' => true], 201);
         } catch (Exception $e) {
 
-            return RedirectResponse::to('/Pages/error.phtml?msg=' . urlencode($e->getMessage()));
+            return new RedirectResponse('/index.php?page=error&msg=' . urlencode($e->getMessage()));
         }
     }
 
@@ -109,7 +112,7 @@ class BookController
             $book = $this->bookService->getBookById($bookId);
 
             if (!$book) {
-                return JsonResponse::json(['error' => 'Book not found'], 404);
+                return new JsonResponse(['error' => 'Book not found'], 404);
             }
 
             $errors = $this->bookService->validateBookData($title, $year);
@@ -123,10 +126,10 @@ class BookController
 
             $this->bookService->editBook($book);
 
-            return JsonResponse::json(['success' => true], 200);
+            return new JsonResponse(['success' => true], 200);
         } catch (Exception $e) {
 
-            return RedirectResponse::to('/Pages/error.phtml?msg=' . urlencode($e->getMessage()));
+            return new RedirectResponse('/index.php?page=error&msg=' . urlencode($e->getMessage()));
         }
     }
 
@@ -140,10 +143,10 @@ class BookController
     {
         try {
             $this->bookService->deleteBook($bookId);
-            return JsonResponse::json(['success' => true], 200);
+            return new JsonResponse(['success' => true], 200);
         } catch (Exception $e) {
 
-            return RedirectResponse::to('/Pages/error.phtml?msg=' . urlencode($e->getMessage()));
+            return new RedirectResponse('/index.php?page=error&msg=' . urlencode($e->getMessage()));
         }
     }
 

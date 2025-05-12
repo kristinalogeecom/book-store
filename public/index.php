@@ -4,39 +4,33 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use BookStore\Application\Presentation\Controller\AuthorController;
 use BookStore\Application\Presentation\Controller\BookController;
+use BookStore\Application\Presentation\Controller\ErrorController;
 use BookStore\Infrastructure\Container\ServiceRegistry;
-use BookStore\Infrastructure\Session\Session;
 use BookStore\Infrastructure\Response\JsonResponse;
+use BookStore\Infrastructure\Container\DependencyConfigurator;
 
 try {
-    ServiceRegistry::initializeServices();
-    Session::getInstance();
-} catch (Exception $e) {
-    JsonResponse::json(['error' => 'Failed to initialize services'], 500)->send();
-    exit;
-}
+    DependencyConfigurator::configure();
 
-/** @var AuthorController $authorController */
-/** @var BookController $bookController */
-try {
+    /** @var AuthorController $authorController */
     $authorController = ServiceRegistry::get(AuthorController::class);
+
+    /** @var BookController $bookController */
     $bookController = ServiceRegistry::get(BookController::class);
-} catch (Exception $e) {
-    JsonResponse::json(['error' => 'Failed to load controllers'], 500)->send();
-    exit;
-}
 
-if (isset($_GET['api']) && $_GET['api'] === 'books') {
-    header('Content-Type: application/json');
+    /** @var ErrorController $errorController */
+    $errorController = ServiceRegistry::get(ErrorController::class);
 
-    $method = $_SERVER['REQUEST_METHOD'];
-    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    if (isset($_GET['api']) && $_GET['api'] === 'books') {
+        header('Content-Type: application/json');
 
-    $action = $_GET['action'] ?? '';
-    $authorId = $_GET['author_id'] ?? $data['author_id'] ?? null;
-    $bookId = $_GET['book_id'] ?? $data['id'] ?? null;
+        $method = $_SERVER['REQUEST_METHOD'];
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
 
-    try {
+        $action = $_GET['action'] ?? '';
+        $authorId = $_GET['author_id'] ?? $data['author_id'] ?? null;
+        $bookId = $_GET['book_id'] ?? $data['id'] ?? null;
+
         switch ($action) {
             case 'getByAuthor':
                 $bookController->getByAuthorId((int)$authorId)->send();
@@ -62,17 +56,13 @@ if (isset($_GET['api']) && $_GET['api'] === 'books') {
                 $bookController->deleteBook((int)$bookId)->send();
                 break;
             default:
-                JsonResponse::json(['error' => 'Invalid API action'], 400)->send();
+                return new JsonResponse(['error' => 'Invalid API action'], 400);
         }
-    } catch (Exception $e) {
-        JsonResponse::json(['error' => $e->getMessage()], 500)->send();
+        exit;
     }
-    exit;
-}
 
-$page = $_GET['page'] ?? 'authorsList';
+    $page = $_GET['page'] ?? 'authorsList';
 
-try {
     switch ($page) {
         case 'authorsList':
             $authorController->listAuthors()->send();
@@ -90,14 +80,16 @@ try {
             }
             break;
         case 'authorBooks':
-            include __DIR__ . '../../src/Application/Presentation/Pages/authorBooks.html';
+            $authorController->renderAuthorBooksPage()->send();
             break;
         case 'error':
-            include __DIR__ . '/../src/Application/Presentation/Pages/error.phtml';
+            $msg = $_GET['msg'] ?? 'Unknown error occurred.';
+            $errorController->render($msg)->send();
             break;
         default:
             echo "404 - Page not found";
     }
+
 } catch (Exception $e) {
-    JsonResponse::json(['error' => $e->getMessage()], 500)->send();
+    return new JsonResponse(['error' => $e->getMessage()], 500);
 }

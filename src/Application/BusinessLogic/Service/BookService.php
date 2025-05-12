@@ -4,9 +4,10 @@ namespace BookStore\Application\BusinessLogic\Service;
 
 use BookStore\Application\BusinessLogic\Models\Book;
 use BookStore\Application\BusinessLogic\RepositoryInterfaces\BookRepositoryInterface;
+use BookStore\Application\BusinessLogic\ServiceInterfaces\BookServiceInterface;
 use Exception;
 
-class BookService
+class BookService implements BookServiceInterface
 {
     /**
      * @var BookRepositoryInterface

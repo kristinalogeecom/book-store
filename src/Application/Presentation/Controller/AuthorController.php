@@ -3,6 +3,7 @@
 namespace BookStore\Application\Presentation\Controller;
 
 use BookStore\Application\BusinessLogic\Models\Author;
+use BookStore\Application\BusinessLogic\ServiceInterfaces\AuthorServiceInterface;
 use BookStore\Infrastructure\Response\HtmlResponse;
 use BookStore\Infrastructure\Response\RedirectResponse;
 use BookStore\Infrastructure\Response\Response;
@@ -12,14 +13,14 @@ use Exception;
 class AuthorController
 {
     /**
-     * @var AuthorService
+     * @var AuthorServiceInterface
      */
-    private AuthorService $authorService;
+    private AuthorServiceInterface $authorService;
 
     /**
-     * @param AuthorService $authorService
+     * @param AuthorServiceInterface $authorService
      */
-    public function __construct(AuthorService $authorService)
+    public function __construct(AuthorServiceInterface $authorService)
     {
         $this->authorService = $authorService;
     }
@@ -57,7 +58,7 @@ class AuthorController
         try {
             $this->authorService->createAuthor($author);
 
-            return RedirectResponse::to('index.php?page=authorsList');
+            return new RedirectResponse('index.php?page=authorsList');
 
         } catch (Exception $e) {
             $this->handleErrorMessages($e, $errors);
@@ -82,7 +83,7 @@ class AuthorController
         $errors = ['first_name' => '', 'last_name' => '', 'general' => ''];
 
         if (!$id) {
-            return RedirectResponse::to('index.php?page=authorsList');
+            return new RedirectResponse('index.php?page=authorsList');
         }
 
         try {
@@ -110,7 +111,7 @@ class AuthorController
 
         try {
             $this->authorService->editAuthor($author);
-            return RedirectResponse::to('index.php?page=authorsList');
+            return new RedirectResponse('index.php?page=authorsList');
         } catch (Exception $e) {
             $this->handleErrorMessages($e, $errors);
 
@@ -137,7 +138,7 @@ class AuthorController
         }
 
         if ($author === null) {
-            return RedirectResponse::to('index.php?page=authorsList');
+            return new RedirectResponse('index.php?page=authorsList');
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -146,7 +147,7 @@ class AuthorController
 
         try {
             $this->authorService->deleteAuthor($id);
-            return RedirectResponse::to('index.php?page=authorsList');
+            return new RedirectResponse('index.php?page=authorsList');
         } catch (Exception $e) {
 
             return new HtmlResponse('deleteAuthor', [
@@ -173,5 +174,10 @@ class AuthorController
         if (empty($errors['first_name']) && empty($errors['last_name'])) {
             $errors['general'] = $errorMessages['general'] ?? 'An error occurred during the process.';
         }
+    }
+
+    public function renderAuthorBooksPage(): HtmlResponse
+    {
+        return new HtmlResponse(__DIR__ . '/../Pages/authorBooks.html');
     }
 }

@@ -3,10 +3,11 @@
 namespace BookStore\Application\BusinessLogic\Service;
 
 use BookStore\Application\BusinessLogic\Models\Author;
+use BookStore\Application\BusinessLogic\ServiceInterfaces\AuthorServiceInterface;
 use BookStore\Application\BusinessLogic\RepositoryInterfaces\AuthorRepositoryInterface;
 use Exception;
 
-class AuthorService
+class AuthorService implements AuthorServiceInterface
 {
     /**
      * @var AuthorRepositoryInterface
@@ -119,4 +120,5 @@ class AuthorService
 
         return $errors;
     }
+
 }

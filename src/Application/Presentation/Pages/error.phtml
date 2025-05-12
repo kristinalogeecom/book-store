@@ -1,8 +1,4 @@
-<?php
-
-$message = $_GET['msg'] ?? 'Unknown error occurred.';
-
-?>
+<?php /** @var string $message */ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,16 +6,14 @@ $message = $_GET['msg'] ?? 'Unknown error occurred.';
     <title>Page not found</title>
     <link rel="stylesheet" href="/style/error.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 </head>
 <body>
 <div class="error-container">
     <i class="fa-regular fa-face-frown error-icon"></i>
     <h1>404 Page not found</h1>
     <p class="subtitle">An error occurred.</p>
-    <p class="details"><?php echo htmlspecialchars($message); ?></p>
+    <p class="details"><?= htmlspecialchars($message ?? 'Unknown error occurred.') ?></p>
     <a href="/index.php?page=authorsList" class="back-btn">Back to Home</a>
-
 </div>
 </body>
 </html>
