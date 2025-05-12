@@ -38,35 +38,61 @@ class AuthorController
     }
 
     /**
-     * Create a new author.
-     *
      * @return Response
      */
-    public function createAuthor(): Response
+    public function showCreateForm(): Response
     {
-        $errors = ['first_name' => '', 'last_name' => '', 'general' => ''];
+        return new HtmlResponse('createAuthor', [
+            'errors' => [],
+            'firstName' => '',
+            'lastName' => ''
+        ]);
+    }
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return new HtmlResponse('createAuthor', ['errors' => $errors]);
-        }
-
-        $firstName = trim($_POST['first_name'] ?? '');
-        $lastName = trim($_POST['last_name'] ?? '');
-
-        $author = new Author(0, $firstName, $lastName);
-
+    /**
+     * Create new author.
+     *
+     * @param string $firstName
+     * @param string $lastName
+     * @return Response
+     */
+    public function createAuthor(string $firstName, string $lastName): Response
+    {
         try {
+            $author = new Author(0, $firstName, $lastName);
             $this->authorService->createAuthor($author);
 
             return new RedirectResponse('index.php?page=authorsList');
 
         } catch (Exception $e) {
-            $this->handleErrorMessages($e, $errors);
+            $errors = $this->handleErrorMessages($e->getMessage());
 
             return new HtmlResponse('createAuthor', [
                 'errors' => $errors,
-                'first_name' => $firstName,
-                'last_name' => $lastName
+                'firstName' => $firstName,
+                'lastName' => $lastName
+            ]);
+        }
+    }
+
+    /**
+     * @param int $id
+     * @return Response
+     */
+    public function showEditForm(int $id): Response
+    {
+        try {
+            $author = $this->authorService->getAuthorById($id);
+
+            return new HtmlResponse('editAuthor', [
+                'errors' => [],
+                'author' => $author
+            ]);
+        } catch (Exception $e) {
+
+            return new HtmlResponse('editAuthor', [
+                'errors' => ['general' => $e->getMessage()],
+                'author' => new Author($id, '', '')
             ]);
         }
     }
@@ -74,50 +100,41 @@ class AuthorController
     /**
      * Edit an existing author.
      *
-     * @param int $id Author ID
+     * @param int $id
+     * @param string $firstName
+     * @param string $lastName
      * @return Response
-     * @throws Exception if author is not found
      */
-    public function editAuthor(int $id): Response
+    public function editAuthor(int $id, string $firstName, string $lastName): Response
     {
-        $errors = ['first_name' => '', 'last_name' => '', 'general' => ''];
-
-        if (!$id) {
-            return new RedirectResponse('index.php?page=authorsList');
-        }
+        $author = new Author($id, $firstName, $lastName);
 
         try {
-            $author = $this->authorService->getAuthorById($id);
-            if (!$author) {
-                throw new Exception('Author not found.');
-            }
-        } catch (Exception $e) {
-            $errors['general'] = $e->getMessage();
-            $author = null;
-        }
+            $this->authorService->editAuthor($author);
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return new RedirectResponse('index.php?page=authorsList');
+        } catch (Exception $e) {
+            $errors = $this->handleErrorMessages($e->getMessage());
+
             return new HtmlResponse('editAuthor', [
                 'author' => $author,
                 'errors' => $errors,
             ]);
         }
+    }
 
-        $firstName = trim($_POST['first_name'] ?? '');
-        $lastName = trim($_POST['last_name'] ?? '');
-
-        $author->setFirstName($firstName);
-        $author->setLastName($lastName);
-
+    public function showDeleteForm(int $id): Response
+    {
         try {
-            $this->authorService->editAuthor($author);
-            return new RedirectResponse('index.php?page=authorsList');
-        } catch (Exception $e) {
-            $this->handleErrorMessages($e, $errors);
-
-            return new HtmlResponse('editAuthor', [
+            $author = $this->authorService->getAuthorById($id);
+            return new HtmlResponse('deleteAuthor', [
                 'author' => $author,
-                'errors' => $errors,
+                'errors' => []
+            ]);
+        } catch (Exception $e) {
+            return new HtmlResponse('deleteAuthor', [
+                'author' => new Author($id, '', ''),
+                'errors' => ['general' => $e->getMessage()]
             ]);
         }
     }
@@ -132,52 +149,37 @@ class AuthorController
     public function deleteAuthor(int $id): Response
     {
         try {
-            $author = $this->authorService->getAuthorById($id);
-        } catch (Exception $e) {
-            $author = null;
-        }
-
-        if ($author === null) {
-            return new RedirectResponse('index.php?page=authorsList');
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return new HtmlResponse('deleteAuthor', ['author' => $author]);
-        }
-
-        try {
             $this->authorService->deleteAuthor($id);
+
             return new RedirectResponse('index.php?page=authorsList');
         } catch (Exception $e) {
 
             return new HtmlResponse('deleteAuthor', [
-                'author' => $author,
+                'author' => new Author($id, '', ''),
                 'errors' => $e->getMessage()
             ]);
-        }
-    }
-
-    /**
-     * Handle error messages for author creating/editing.
-     *
-     * @param Exception $e
-     * @param array $errors Error messages array
-     * @return void
-     */
-    private function handleErrorMessages(Exception $e, array &$errors): void
-    {
-        $errorMessages = json_decode($e->getMessage(), true);
-
-        $errors['first_name'] = $errorMessages['first_name'] ?? '';
-        $errors['last_name'] = $errorMessages['last_name'] ?? '';
-
-        if (empty($errors['first_name']) && empty($errors['last_name'])) {
-            $errors['general'] = $errorMessages['general'] ?? 'An error occurred during the process.';
         }
     }
 
     public function renderAuthorBooksPage(): HtmlResponse
     {
         return new HtmlResponse(__DIR__ . '/../Pages/authorBooks.html');
+    }
+
+    /**
+     * Handle error messages for author creating/editing.
+     *
+     * @param string $jsonMessage
+     * @return array
+     */
+    private function handleErrorMessages(string $jsonMessage): array
+    {
+        $errorMessages = json_decode($jsonMessage, true) ?: [];
+
+        return [
+            'firstName' => $errorMessages['firstName'] ?? '',
+            'lastName' => $errorMessages['lastName'] ?? '',
+            'general' => $errorMessages['general'] ?? 'An error occurred.',
+        ];
     }
 }

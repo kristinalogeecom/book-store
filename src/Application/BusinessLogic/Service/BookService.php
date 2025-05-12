@@ -6,6 +6,7 @@ use BookStore\Application\BusinessLogic\Models\Book;
 use BookStore\Application\BusinessLogic\RepositoryInterfaces\BookRepositoryInterface;
 use BookStore\Application\BusinessLogic\ServiceInterfaces\BookServiceInterface;
 use Exception;
+use function DI\string;
 
 class BookService implements BookServiceInterface
 {
@@ -30,7 +31,7 @@ class BookService implements BookServiceInterface
      */
     public function getByAuthorId(int $authorId): array
     {
-        return $this->bookRepository->getByAuthorId($authorId);
+        return $this->bookRepository->getAllBooksForAuthor($authorId);
     }
 
     /**
@@ -42,11 +43,7 @@ class BookService implements BookServiceInterface
      */
     public function createBook(Book $book): void
     {
-        $errors = $this->validateBookData($book->getTitle(), $book->getYear());
-
-        if (!empty($errors)) {
-            throw new Exception(implode("\n", $errors));
-        }
+        $this->validateBookData($book);
 
         $this->bookRepository->createBook($book);
     }
@@ -56,9 +53,12 @@ class BookService implements BookServiceInterface
      *
      * @param Book $book
      * @return void
+     * @throws Exception
      */
     public function editBook(Book $book): void
     {
+        $this->validateBookData($book);
+
         $this->bookRepository->editBook($book);
     }
 
@@ -87,12 +87,14 @@ class BookService implements BookServiceInterface
     /**
      * Validate book data.
      *
-     * @param string $title
-     * @param int $year
-     * @return array
+     * @param Book $book
+     * @return void
+     * @throws Exception
      */
-    public function validateBookData(string $title, int $year): array
+    public function validateBookData(Book $book): void
     {
+        $title = $book->getTitle();
+        $year = $book->getYear();
         $errors = [];
 
         if (empty($title)) {
@@ -107,6 +109,8 @@ class BookService implements BookServiceInterface
             $errors['year'] = 'The year must be between -5000 and 999999, and cannot be 0.';
         }
 
-        return $errors;
+        if (!empty($errors)) {
+            throw new \Exception(json_encode($errors));
+        }
     }
 }

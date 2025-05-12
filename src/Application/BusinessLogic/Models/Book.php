@@ -90,6 +90,4 @@ class Book
     {
         $this->author_id = $author_id;
     }
-
-
 }

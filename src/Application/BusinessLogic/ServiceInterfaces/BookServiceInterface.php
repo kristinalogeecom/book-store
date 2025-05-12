@@ -15,5 +15,4 @@ interface BookServiceInterface
     public function deleteBook(int $bookId): void;
 
     public function getBookById(int $bookId): ?Book;
-
 }

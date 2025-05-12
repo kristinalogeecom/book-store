@@ -5,6 +5,7 @@ namespace BookStore\Application\Persistence\MySQL;
 use BookStore\Application\BusinessLogic\RepositoryInterfaces\BookRepositoryInterface;
 use BookStore\Infrastructure\Database\DatabaseConnection;
 use BookStore\Application\BusinessLogic\Models\Book;
+use Exception;
 use PDO;
 
 class BookRepository implements BookRepositoryInterface
@@ -16,7 +17,7 @@ class BookRepository implements BookRepositoryInterface
      * @param int $authorId
      * @return array
      */
-    public function getByAuthorId(int $authorId): array
+    public function getAllBooksForAuthor(int $authorId): array
     {
         $stmt = DatabaseConnection::connect()->prepare("SELECT * FROM books WHERE author_id = ?");
         $stmt->execute([$authorId]);
@@ -62,44 +63,64 @@ class BookRepository implements BookRepositoryInterface
      * Create a new book by the author.
      *
      * @param Book $book
-     * @return void
+     * @return bool
+     * @throws Exception
      */
-    public function createBook(Book $book): void
+    public function createBook(Book $book): bool
     {
         $stmt = DatabaseConnection::connect()->prepare("INSERT INTO books (title, year, author_id) VALUES (?, ?, ?)");
-        $stmt->execute([
+        $success = $stmt->execute([
             $book->getTitle(),
             $book->getYear(),
             $book->getAuthorId()
         ]);
+
+        if (!$success) {
+            throw new Exception("Failed to create book");
+        }
+
+        return true;
     }
 
     /**
      * Edit an existing book by the author.
      *
      * @param Book $book
-     * @return void
+     * @return bool
+     * @throws Exception
      */
-    public function editBook(Book $book): void
+    public function editBook(Book $book): bool
     {
         $stmt = DatabaseConnection::connect()->prepare("UPDATE books SET title = ?, year = ? WHERE id = ?");
-        $stmt->execute([
+        $success = $stmt->execute([
             $book->getTitle(),
             $book->getYear(),
             $book->getId()
         ]);
+
+        if (!$success || $stmt->rowCount() === 0) {
+            throw new Exception("Failed to update book or book not found.");
+        }
+
+        return true;
     }
 
     /**
      * Delete the author's book.
      *
      * @param int $bookId
-     * @return void
+     * @return bool
+     * @throws Exception
      */
-    public function deleteBook(int $bookId): void
+    public function deleteBook(int $bookId): bool
     {
         $stmt = DatabaseConnection::connect()->prepare("DELETE FROM books WHERE id = ?");
-        $stmt->execute([$bookId]);
-    }
+        $success = $stmt->execute([$bookId]);
 
+        if (!$success || $stmt->rowCount() === 0) {
+            throw new Exception("Failed to delete book or book not found.");
+        }
+
+        return true;
+    }
 }

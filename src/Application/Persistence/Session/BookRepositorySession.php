@@ -22,7 +22,7 @@ class BookRepositorySession implements BookRepositoryInterface
      * @param int $authorId
      * @return array
      */
-    public function getByAuthorId(int $authorId): array
+    public function getAllBooksForAuthor(int $authorId): array
     {
         $booksData = Session::getInstance()->get('books');
         $authorBooks = [];
@@ -39,9 +39,9 @@ class BookRepositorySession implements BookRepositoryInterface
      * Create a new book by the author.
      *
      * @param Book $book
-     * @return void
+     * @return bool
      */
-    public function createBook(Book $book): void
+    public function createBook(Book $book): bool
     {
         $books = Session::getInstance()->get('books');
         $id = $this->generateNextId($books);
@@ -50,16 +50,18 @@ class BookRepositorySession implements BookRepositoryInterface
         $books[$id] = $book;
 
         Session::getInstance()->set('books', $books);
+
+        return true;
     }
 
     /**
      * Edit an existing book by the author.
      *
      * @param Book $book
-     * @return void
+     * @return bool
      * @throws Exception
      */
-    public function editBook(Book $book): void
+    public function editBook(Book $book): bool
     {
         $books = Session::getInstance()->get('books');
         $bookId = $book->getId();
@@ -70,16 +72,18 @@ class BookRepositorySession implements BookRepositoryInterface
 
         $books[$bookId] = $book;
         Session::getInstance()->set('books', $books);
+
+        return true;
     }
 
     /**
      * Delete the author's book.
      *
      * @param int $bookId
-     * @return void
+     * @return bool
      * @throws Exception
      */
-    public function deleteBook(int $bookId): void
+    public function deleteBook(int $bookId): bool
     {
         $books = Session::getInstance()->get('books');
 
@@ -89,6 +93,8 @@ class BookRepositorySession implements BookRepositoryInterface
 
         unset($books[$bookId]);
         Session::getInstance()->set('books', $books);
+
+        return true;
     }
 
 
@@ -125,5 +131,4 @@ class BookRepositorySession implements BookRepositoryInterface
         }
         return $maxId + 1;
     }
-
 }

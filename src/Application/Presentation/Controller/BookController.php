@@ -115,12 +115,6 @@ class BookController
                 return new JsonResponse(['error' => 'Book not found'], 404);
             }
 
-            $errors = $this->bookService->validateBookData($title, $year);
-
-            if (!empty($errors)) {
-                throw new Exception(implode(' ', $errors));
-            }
-
             $book->setTitle($title);
             $book->setYear($year);
 

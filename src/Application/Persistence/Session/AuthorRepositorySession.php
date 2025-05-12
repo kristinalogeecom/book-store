@@ -41,9 +41,9 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
      * Create a new author.
      *
      * @param Author $author
-     * @return void
+     * @return bool
      */
-    public function createAuthor(Author $author): void
+    public function createAuthor(Author $author): bool
     {
         $authors = Session::getInstance()->get('authors');
         $id = $this->generateNextId($authors);
@@ -52,16 +52,18 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
         $authors[$id] = $author;
 
         Session::getInstance()->set('authors', $authors);
+
+        return true;
     }
 
     /**
      * Edit an existing author.
      *
      * @param Author $author
-     * @return void
+     * @return bool
      * @throws Exception
      */
-    public function editAuthor(Author $author): void
+    public function editAuthor(Author $author): bool
     {
         $authors = Session::getInstance()->get('authors');
         $id = $author->getId();
@@ -73,16 +75,18 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
         $authors[$id] = $author;
 
         Session::getInstance()->set('authors', $authors);
+
+        return true;
     }
 
     /**
      * Delete an author by ID.
      *
      * @param int $authorId
-     * @return void
+     * @return bool
      * @throws Exception
      */
-    public function deleteAuthor(int $authorId): void
+    public function deleteAuthor(int $authorId): bool
     {
         $authors = Session::getInstance()->get('authors') ?? [];
 
@@ -101,6 +105,7 @@ class AuthorRepositorySession implements AuthorRepositoryInterface
 
         Session::getInstance()->set('books', $books);
 
+        return true;
     }
 
     /**

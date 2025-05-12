@@ -48,54 +48,83 @@ class AuthorRepository implements AuthorRepositoryInterface
      * Create a new author.
      *
      * @param Author $author
-     * @return void
+     * @return bool
+     * @throws Exception
      */
-    public function createAuthor(Author $author): void
+    public function createAuthor(Author $author): bool
     {
         $query = "INSERT INTO authors(first_name, last_name) VALUES(?, ?)";
         $stmt = DatabaseConnection::connect()->prepare($query);
-        $stmt->execute([
+        $success = $stmt->execute([
             $author->getFirstName(),
             $author->getLastName()
         ]);
+
+        if (!$success) {
+            throw new Exception("Failed to create author");
+        }
+
+        return true;
     }
 
     /**
      * Edit an existing author.
      *
      * @param Author $author
-     * @return void
+     * @return bool
      * @throws Exception
      */
-    public function editAuthor(Author $author): void
+    public function editAuthor(Author $author): bool
     {
         $query = "UPDATE authors SET first_name = ?, last_name = ? WHERE id = ?";
         $stmt = DatabaseConnection::connect()->prepare($query);
-        $stmt->execute([$author->getFirstName(),
+        $success = $stmt->execute([$author->getFirstName(),
             $author->getLastName(),
             $author->getId()
         ]);
 
-        if ($stmt->rowCount() === 0) {
-            throw new Exception('Author not found.');
+        if (!$success || $stmt->rowCount() === 0) {
+            throw new Exception("Failed to update author or author not found.");
         }
+
+        return true;
     }
 
     /**
      * Delete an author by ID.
      *
      * @param int $authorId Author ID
-     * @return void
+     * @return bool
      * @throws Exception
      */
-    public function deleteAuthor(int $authorId): void
+    public function deleteAuthor(int $authorId): bool
     {
-        $query = "DELETE FROM authors WHERE id = ?";
-        $stmt = DatabaseConnection::connect()->prepare($query);
-        $stmt->execute([$authorId]);
+        try {
+            DatabaseConnection::connect()->beginTransaction();
 
-        if ($stmt->rowCount() === 0) {
-            throw new Exception('Author not found.');
+            $queryBooks = "DELETE FROM books WHERE author_id = ?";
+            $stmtBooks = DatabaseConnection::connect()->prepare($queryBooks);
+            $successBooks = $stmtBooks->execute([$authorId]);
+
+            if (!$successBooks) {
+                throw new Exception("Failed to delete author's books.");
+            }
+
+            $queryAuthor = "DELETE FROM authors WHERE id = ?";
+            $stmtAuthor = DatabaseConnection::connect()->prepare($queryAuthor);
+            $successAuthor = $stmtAuthor->execute([$authorId]);
+
+            if (!$successAuthor || $stmtAuthor->rowCount() === 0) {
+                throw new Exception("Failed to delete author or author not found.");
+            }
+
+            DatabaseConnection::connect()->commit();
+
+            return true;
+
+        } catch (Exception $e) {
+            DatabaseConnection::connect()->rollBack();
+            throw new Exception('Failed to delete author' . $e->getMessage());
         }
     }
 

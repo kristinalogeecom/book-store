@@ -13,24 +13,24 @@
     <form method="post" action="">
 
         <label for="first_name">First Name</label>
-        <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($author->getFirstName()) ?>">
+        <input type="text" id="first_name" name="firstName" value="<?= htmlspecialchars($author->getFirstName()) ?>">
 
-        <?php if (!empty($errors['first_name'])): ?>
-            <div class="error-msg" style="color: red;"><?= htmlspecialchars($errors['first_name']) ?></div>
+        <?php if (!empty($errors['firstName'])): ?>
+            <div class="error-msg" style="color: red;"><?= htmlspecialchars($errors['firstName']) ?></div>
         <?php endif; ?>
 
         <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($author->getLastName()) ?>">
+        <input type="text" id="last_name" name="lastName" value="<?= htmlspecialchars($author->getLastName()) ?>">
 
-        <?php if (!empty($errors['last_name'])): ?>
-            <div class="error-msg" style="color: red;"><?= htmlspecialchars($errors['last_name']) ?></div>
+        <?php if (!empty($errors['lastName'])): ?>
+            <div class="error-msg" style="color: red;"><?= htmlspecialchars($errors['lastName']) ?></div>
         <?php endif; ?>
 
         <div class="btn-wrapper">
             <button type="submit">Save</button>
         </div>
 
-        <?php if (!empty($errors['general'])): ?>
+        <?php if (!empty($errors['general']) && empty($errors['firstName']) && empty($errors['lastName'])): ?>
             <div class="error-msg"
                  style="color: red; margin-top: 10px;"><?= htmlspecialchars($errors['general']) ?></div>
         <?php endif; ?>

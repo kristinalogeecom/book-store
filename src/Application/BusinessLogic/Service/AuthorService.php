@@ -41,13 +41,13 @@ class AuthorService implements AuthorServiceInterface
      */
     public function createAuthor(Author $author): void
     {
-        $errors = $this->validateAuthorData($author->getFirstName(), $author->getLastName());
+        $this->validateAuthorData($author);
 
-        if (!empty($errors)) {
-            throw new Exception(json_encode($errors));
+        try {
+            $this->repository->createAuthor($author);
+        } catch (Exception $e) {
+            throw new Exception(json_encode(['general' => $e->getMessage()]));
         }
-
-        $this->repository->createAuthor($author);
     }
 
     /**
@@ -59,24 +59,21 @@ class AuthorService implements AuthorServiceInterface
      */
     public function editAuthor(Author $author): void
     {
-        $errors = $this->validateAuthorData($author->getFirstName(), $author->getLastName());
+        $existingAuthor = $this->getAuthorById($author->getId());
 
-        if (!empty($errors)) {
-            throw new Exception(json_encode($errors));
+        if ($author->getFirstName() === $existingAuthor->getFirstName() &&
+            $author->getLastName() === $existingAuthor->getLastName()) {
+
+            return;
         }
 
-        $this->repository->editAuthor($author);
-    }
+        $this->validateAuthorData($author);
 
-    /**
-     * Get an author by ID.
-     *
-     * @param int $id Author ID
-     * @return array|null Author data or null if not found
-     */
-    public function getAuthorById(int $id): ?Author
-    {
-        return $this->repository->getAuthorById($id);
+        try {
+            $this->repository->editAuthor($author);
+        } catch (Exception $e) {
+            throw new Exception(json_encode(['general' => $e->getMessage()]));
+        }
     }
 
     /**
@@ -88,37 +85,60 @@ class AuthorService implements AuthorServiceInterface
      */
     public function deleteAuthor(int $id): void
     {
-        $this->repository->deleteAuthor($id);
+        $this->getAuthorById($id);
+
+        try {
+            $this->repository->deleteAuthor($id);
+        } catch (Exception $e) {
+            throw new Exception(json_encode(['general' => $e->getMessage()]));
+        }
+    }
+
+    /**
+     * @param int $id
+     * @return Author|null
+     * @throws Exception
+     */
+    public function getAuthorById(int $id): ?Author
+    {
+
+        $existingAuthor = $this->repository->getAuthorById($id);
+
+        if (!$existingAuthor) {
+            throw new \Exception(json_encode(['general' => 'Author not found.']));
+        }
+
+        return $existingAuthor;
     }
 
     /**
      * Validate author data.
      *
-     * @param string $firstName
-     * @param string $lastName
-     * @return array Validation errors
+     * @param Author $author
+     * @return void
+     * @throws Exception
      */
-    private function validateAuthorData(string $firstName, string $lastName): array
+    private function validateAuthorData(Author $author): void
     {
+        $firstName = $author->getFirstName();
+        $lastName = $author->getLastName();
         $errors = [];
 
         if (empty($firstName)) {
-            $errors['first_name'] = 'First name is required';
+            $errors['firstName'] = 'First name is required';
+        } elseif (strlen($firstName) > 100) {
+            $errors['firstName'] = 'First name cannot exceed 100 characters.';
         }
 
         if (empty($lastName)) {
-            $errors['last_name'] = 'Last name is required';
+            $errors['lastName'] = 'Last name is required';
+        } elseif (strlen($lastName) > 100) {
+            $errors['lastName'] = 'Last name cannot exceed 100 characters.';
         }
 
-        if (strlen($firstName) > 100) {
-            $errors['first_name'] = 'First name cannot exceed 100 characters.';
+        if (!empty($errors)) {
+            throw new \Exception(json_encode($errors));
         }
 
-        if (strlen($lastName) > 100) {
-            $errors['last_name'] = 'Last name cannot exceed 100 characters.';
-        }
-
-        return $errors;
     }
-
 }

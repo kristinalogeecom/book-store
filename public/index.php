@@ -68,15 +68,26 @@ try {
             $authorController->listAuthors()->send();
             break;
         case 'createAuthor':
-            $authorController->createAuthor()->send();
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $authorController->createAuthor($_POST['firstName'] ?? '', $_POST['lastName'] ?? '')->send();
+            } else {
+                $authorController->showCreateForm()->send();
+            }
             break;
         case 'editAuthor':
+            $id = (int)($_GET['id'] ?? 0);
+            if($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $authorController->editAuthor($id, $_POST['firstName'] ?? '', $_POST['lastName'] ?? '')->send();
+            } else {
+                $authorController->showEditForm($id)->send();
+            }
+            break;
         case 'deleteAuthor':
             $id = (int)($_GET['id'] ?? 0);
-            if ($page === 'editAuthor') {
-                $authorController->editAuthor($id)->send();
-            } else {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $authorController->deleteAuthor($id)->send();
+            } else {
+                $authorController->showDeleteForm($id)->send();
             }
             break;
         case 'authorBooks':
