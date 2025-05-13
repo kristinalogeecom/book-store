@@ -2,6 +2,14 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+try {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../', ['.env.local', '.env']);
+    $dotenv->load();
+} catch (Dotenv\Exception\InvalidPathException $e) {
+} catch (Dotenv\Exception\InvalidFileException $e) {
+    error_log("Critical error: Invalid .env file format: " . $e->getMessage());
+}
+
 use BookStore\Application\Presentation\Controller\AuthorController;
 use BookStore\Application\Presentation\Controller\BookController;
 use BookStore\Application\Presentation\Controller\ErrorController;
@@ -10,14 +18,12 @@ use BookStore\Infrastructure\Response\JsonResponse;
 use BookStore\Infrastructure\Container\DependencyConfigurator;
 
 try {
-    DependencyConfigurator::configure();
 
+    DependencyConfigurator::configure();
     /** @var AuthorController $authorController */
     $authorController = ServiceRegistry::get(AuthorController::class);
-
     /** @var BookController $bookController */
     $bookController = ServiceRegistry::get(BookController::class);
-
     /** @var ErrorController $errorController */
     $errorController = ServiceRegistry::get(ErrorController::class);
 

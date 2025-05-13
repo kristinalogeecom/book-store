@@ -4,10 +4,26 @@ namespace BookStore\Infrastructure\Database;
 
 use PDO;
 use PDOException;
+use RuntimeException;
 
 class DatabaseConnection
 {
     private static ?PDO $instance = null;
+
+    /**
+     * @param string $key
+     * @return string
+     */
+    private static function getRequiredEnv(string $key): string
+    {
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+
+        if ($value === false || $value === null || $value === '') {
+            throw new RuntimeException("Environment variable '$key' not set or is empty.");
+        }
+
+        return $value;
+    }
 
     /**
      * Connects to the database
@@ -17,12 +33,14 @@ class DatabaseConnection
     public static function connect(): PDO
     {
         if (self::$instance === null) {
-            $host = 'localhost';
-            $db = 'bookstore';
-            $user = 'root';
-            $password = 'password';
 
-            $dsn = "mysql:host=$host;dbname=$db";
+            $host = self::getRequiredEnv('DB_HOST');
+            $dbName = self::getRequiredEnv('DB_DATABASE');
+            $user = self::getRequiredEnv('DB_USERNAME');
+            $password = self::getRequiredEnv('DB_PASSWORD');
+            $port     = self::getRequiredEnv('DB_PORT');
+
+            $dsn = "mysql:host=$host;port=$port;dbname=$dbName";
 
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
