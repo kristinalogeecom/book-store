@@ -1,7 +1,8 @@
 <?php
 
-namespace BookStore\Infrastructure\Container;
+namespace BookStore\Application\Configuration;
 
+use BookStore\Infrastructure\Container\ServiceRegistry;
 use BookStore\Application\BusinessLogic\ServiceInterfaces\AuthorServiceInterface;
 use BookStore\Application\BusinessLogic\ServiceInterfaces\BookServiceInterface;
 use BookStore\Application\Presentation\Controller\AuthorController;

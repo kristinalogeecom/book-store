@@ -30,19 +30,12 @@ class BookController
      * @param int $authorId
      * @return Response
      */
-    public function getByAuthorId(int $authorId): Response
+    public function getAllBooksForAuthor(int $authorId): Response
     {
         try {
-            $books = $this->bookService->getByAuthorId($authorId);
+            $books = $this->bookService->getAllBooksForAuthor($authorId);
 
-            $booksData = array_map(function (Book $book) {
-                return [
-                    'id' => $book->getId(),
-                    'title' => $book->getTitle(),
-                    'year' => $book->getYear(),
-                    'author_id' => $book->getAuthorId()
-                ];
-            }, $books);
+            $booksData = array_map(fn(Book $book) => $book->toArray(), $books);
 
             return new JsonResponse(['books' => $booksData]);
         } catch (Exception $e) {
@@ -64,14 +57,7 @@ class BookController
             if (!$book) {
                 return new JsonResponse(['error' => 'Book not found'], 404);
             }
-            return new JsonResponse([
-                'book' => [
-                    'id' => $book->getId(),
-                    'title' => $book->getTitle(),
-                    'year' => $book->getYear(),
-                    'author_id' => $book->getAuthorId()
-                ]
-            ]);
+            return new JsonResponse(['book' => $book->toArray()]);
         } catch (Exception $e) {
 
             return new RedirectResponse('/index.php?page=error&msg=' . urlencode($e->getMessage()));

@@ -126,13 +126,17 @@ class AuthorService implements AuthorServiceInterface
 
         if (empty($firstName)) {
             $errors['firstName'] = 'First name is required';
-        } elseif (strlen($firstName) > 100) {
+        }
+
+        if (!empty($firstName) && strlen($firstName) > 100) {
             $errors['firstName'] = 'First name cannot exceed 100 characters.';
         }
 
         if (empty($lastName)) {
             $errors['lastName'] = 'Last name is required';
-        } elseif (strlen($lastName) > 100) {
+        }
+
+        if (!empty($lastName) && strlen($lastName) > 100) {
             $errors['lastName'] = 'Last name cannot exceed 100 characters.';
         }
 

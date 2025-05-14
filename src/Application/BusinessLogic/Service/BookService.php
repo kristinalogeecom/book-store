@@ -29,7 +29,7 @@ class BookService implements BookServiceInterface
      * @param int $authorId
      * @return array
      */
-    public function getByAuthorId(int $authorId): array
+    public function getAllBooksForAuthor(int $authorId): array
     {
         return $this->bookRepository->getAllBooksForAuthor($authorId);
     }
@@ -99,13 +99,15 @@ class BookService implements BookServiceInterface
 
         if (empty($title)) {
             $errors['title'] = 'Title is a required field';
-        } elseif (strlen($title) > 250) {
+        }
+        if (!empty($title) && strlen($title) > 250) {
             $errors['title'] = 'Title is too long';
         }
 
         if (!is_numeric($year)) {
             $errors['year'] = 'The year must be a number.';
-        } elseif ($year < -5000 || $year > 999999 || $year == 0) {
+        }
+        if (is_numeric($year) && ($year < -5000 || $year > 999999 || $year == 0)) {
             $errors['year'] = 'The year must be between -5000 and 999999, and cannot be 0.';
         }
 

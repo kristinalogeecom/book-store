@@ -90,4 +90,14 @@ class Book
     {
         $this->author_id = $author_id;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'year' => $this->year,
+            'author_id' => $this->author_id
+        ];
+    }
 }

@@ -15,7 +15,7 @@ use BookStore\Application\Presentation\Controller\BookController;
 use BookStore\Application\Presentation\Controller\ErrorController;
 use BookStore\Infrastructure\Container\ServiceRegistry;
 use BookStore\Infrastructure\Response\JsonResponse;
-use BookStore\Infrastructure\Container\DependencyConfigurator;
+use BookStore\Application\Configuration\DependencyConfigurator;
 
 try {
 
@@ -39,7 +39,7 @@ try {
 
         switch ($action) {
             case 'getByAuthor':
-                $bookController->getByAuthorId((int)$authorId)->send();
+                $bookController->getAllBooksForAuthor((int)$authorId)->send();
                 break;
             case 'getById':
                 $bookController->getBookById((int)$bookId)->send();
